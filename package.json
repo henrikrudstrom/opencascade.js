@@ -1,0 +1,30 @@
+{
+  "name": "occ.js",
+  "version": "0.0.1",
+  "description": "Node wrappers for Opencascade Solid modelling kernel",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "doc",
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tpaviot/pythonocc-core.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/tpaviot/pythonocc-core/issues"
+  },
+  "homepage": "https://github.com/tpaviot/pythonocc-core#readme",
+  "devDependencies": {
+    "gulp-shell": "^0.5.2",
+    "through": "^2.3.8"
+  }
+}

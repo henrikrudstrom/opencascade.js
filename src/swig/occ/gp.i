@@ -33,7 +33,7 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 %include ../common/Operators.i
 
 
-%include gp_headers.i
+%include headers/gp_headers.i
 
 
 /*%pythoncode {

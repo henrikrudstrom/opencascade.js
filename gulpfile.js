@@ -35,19 +35,15 @@ function swigFile(file, encoding, done){
     console.log(stdout)
     done();
   });
-
 }
 
-gulp.task('init', function(){
 
+
+gulp.task('init', function(){
   mkdirp("build/swig")
 })
 
 gulp.task('swig', ['init'], function () {
   return gulp.src('src/swig/occ/*.i', {read: false})
     .pipe(through.obj(swigFile))
-});
-
-gulp.task("compile", function(){
-
 });

@@ -33,7 +33,7 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 %include ../common/Operators.i
 
 
-%include Geom_headers.i
+%include headers/Geom_headers.i
 
 
 %pythoncode {
@@ -11292,4 +11292,3 @@ class Handle_Geom_TrimmedCurve : public Handle_Geom_BoundedCurve {
     return (Geom_TrimmedCurve*)$self->Access();
     }
 };
-

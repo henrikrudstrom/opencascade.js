@@ -24,6 +24,6 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 %include cpointer.i
 %include carrays.i
 %include exception.i
-%include <python/std_list.i>
+/*%include <python/std_list.i>
 %include <python/std_string.i>
-%include <python/std_basic_string.i>
+%include <python/std_basic_string.i>*/

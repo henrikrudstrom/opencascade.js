@@ -36,7 +36,7 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 %include Standard_headers.i
 
 
-%pythoncode {
+/*%pythoncode {
 def register_handle(handle, base_object):
     """
     Inserts the handle into the base object to
@@ -48,7 +48,7 @@ def register_handle(handle, base_object):
             base_object.thisown = False
     except:
         pass
-};
+};*/
 
 /* typedefs */
 typedef bool Standard_Boolean;
@@ -326,13 +326,13 @@ class Standard_GUID {
             else return false;
             }
         }
-        %pythoncode {
+        /*%pythoncode {
         def __eq__(self,right):
             try:
                 return self.__eq_wrapper__(right)
             except:
                 return False
-        }
+        }*/
         		%feature("compactdefaultargs") IsNotSame;
 		%feature("autodoc", "	:param uid:
 	:type uid: Standard_GUID &
@@ -346,13 +346,13 @@ class Standard_GUID {
             else return false;
             }
         }
-        %pythoncode {
+        /*%pythoncode {
         def __ne__(self,right):
             try:
                 return self.__ne_wrapper__(right)
             except:
                 return True
-        }
+        }*/
         		%feature("compactdefaultargs") Assign;
 		%feature("autodoc", "	:param uid:
 	:type uid: Standard_GUID &
@@ -609,13 +609,13 @@ class Standard_Storable {
             else return false;
             }
         }
-        %pythoncode {
+        /*%pythoncode {
         def __eq__(self,right):
             try:
                 return self.__eq_wrapper__(right)
             except:
                 return False
-        }
+        }*/
         		%feature("compactdefaultargs") IsSimilar;
 		%feature("autodoc", "	* Returns true if the Deep contents of <self> and  <Other> are memberwise equal.
 
@@ -728,7 +728,7 @@ class Standard_Transient {
 
 
 %extend Standard_Transient {
-	%pythoncode {
+	/*%pythoncode {
 		def GetHandle(self):
 		    try:
 		        return self.thisHandle
@@ -736,14 +736,14 @@ class Standard_Transient {
 		        self.thisHandle = Handle_Standard_Transient(self)
 		        self.thisown = False
 		        return self.thisHandle
-	}
+	}*/
 };
 
-%pythonappend Handle_Standard_Transient::Handle_Standard_Transient %{
+/*%pythonappend Handle_Standard_Transient::Handle_Standard_Transient %{
     # register the handle in the base object
     if len(args) > 0:
         register_handle(self, args[0])
-%}
+%}*/
 
 %nodefaultctor Handle_Standard_Transient;
 class Handle_Standard_Transient {
@@ -788,7 +788,7 @@ class Handle_Standard_Transient {
             return s.str();
             }
         }
-        %pythoncode {
+        /*%pythoncode {
         def __eq__(self,right):
             try:
                 return self.__eq_wrapper__(right)
@@ -801,7 +801,7 @@ class Handle_Standard_Transient {
                 return self.__ne_wrapper__(right)
             except:
                 return True
-        }
+        }*/
 
 };
 %extend Handle_Standard_Transient {
@@ -1115,7 +1115,7 @@ class Standard_Type : public Standard_Transient {
             self->ShallowDump(s);
             return s.str();}
         };
-        
+
         %feature("autodoc", "1");
         %extend{
             std::string PrintToString() {
@@ -1127,7 +1127,7 @@ class Standard_Type : public Standard_Transient {
 
 
 %extend Standard_Type {
-	%pythoncode {
+	/*%pythoncode {
 		def GetHandle(self):
 		    try:
 		        return self.thisHandle
@@ -1135,14 +1135,14 @@ class Standard_Type : public Standard_Transient {
 		        self.thisHandle = Handle_Standard_Type(self)
 		        self.thisown = False
 		        return self.thisHandle
-	}
+	}*/
 };
 
-%pythonappend Handle_Standard_Type::Handle_Standard_Type %{
+/*%pythonappend Handle_Standard_Type::Handle_Standard_Type %{
     # register the handle in the base object
     if len(args) > 0:
         register_handle(self, args[0])
-%}
+%}*/
 
 %nodefaultctor Handle_Standard_Type;
 class Handle_Standard_Type : public Handle_Standard_Transient {
@@ -1162,4 +1162,3 @@ class Handle_Standard_Type : public Handle_Standard_Transient {
     return (Standard_Type*)$self->Access();
     }
 };
-

@@ -15,6 +15,10 @@
 ##You should have received a copy of the GNU General Public License
 ##along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 
+
+message("SWIG: " ${SWIG_EXECUTABLE})
+
+
 project(PYTHONOCC)
 
 # set pythonOCC version
@@ -27,7 +31,7 @@ set(PYTHONOCC_VERSION_DEVEL -dev)
 cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_BUILD_TYPE "MinSizeRel" CACHE STRING "Build type")
-message(STATUS " ${CMAKE_CXX_FLAGS}") 
+message(STATUS " ${CMAKE_CXX_FLAGS}")
 set(BUILD_SHARED_LIBS ON)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -44,9 +48,12 @@ endmacro( option_with_default OPTION_NAME OPTION_STRING OPTION_DEFAULT )
 ##########
 # Python #
 ##########
-find_package(PythonInterp)
-find_package(PythonLibs)
-include_directories(${PYTHON_INCLUDE_PATH})
+# find_package(PythonInterp)
+# find_package(PythonLibs)
+# include_directories(${PYTHON_INCLUDE_PATH})
+
+include_directories("/usr/include/node/")
+
 
 ##############################################################
 # 32/64 bit detection
@@ -80,10 +87,11 @@ endif(MINGW)
 ########
 # SWIG #
 ########
-find_package(SWIG)
+find_package(SWIG 3.0)
 include(${SWIG_USE_FILE})
 set(SWIG_FILES_PATH src/SWIG_files/wrapper)
-    
+set(SWIG_EXECUTABLE "../../swig/swig")
+
 ################################
 # OCE include and lib location #
 ################################
@@ -115,8 +123,8 @@ endif(DEFINED OCE_INCLUDE_PATH)
 # by default, installed to site-packages/OCC #
 ##############################################
 execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from __future__ import print_function; from distutils.sysconfig import get_python_lib; import os;print(get_python_lib())" OUTPUT_VARIABLE python_lib OUTPUT_STRIP_TRAILING_WHITESPACE )
-set(PYTHONOCC_INSTALL_DIRECTORY ${python_lib}/OCC CACHE PATH "pythonOCC install directory" )
-
+#set(PYTHONOCC_INSTALL_DIRECTORY ${python_lib}/OCC CACHE PATH "pythonOCC install directory" )
+set(PYTHONOCC_INSTALL_DIRECTORY install/OCC CACHE PATH "pythonOCC install directory" )
 # List of OCE shared libraries to link with
 # TODO: this should be build from the module list
 set(OCE_MODEL_LIBRARIES TKernel TKMath TKAdvTools TKG2d TKG3d TKGeomBase TKBRep TKGeomAlgo
@@ -161,10 +169,12 @@ message(STATUS "Platform:" ${PLATFORM})
 # Tells Swig to use py3k option  #
 ##################################
 execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from __future__ import print_function; import sys; print(sys.version_info.major)" OUTPUT_VARIABLE python_version_major OUTPUT_STRIP_TRAILING_WHITESPACE )
+#
+# if(${python_version_major} MATCHES "3")
+#   set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -py3)
+# endif(${python_version_major} MATCHES "3")
 
-if(${python_version_major} MATCHES "3")
-  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -py3)
-endif(${python_version_major} MATCHES "3")
+set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -node -c++)
 
 ################################################
 # Define output path for generated libraries:  #
@@ -205,66 +215,67 @@ option_with_default(PYTHONOCC_WRAP_OCAF "Compile OCE Application Framework wrapp
 
 # MODEL Toolkits
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${SWIG_FILES_PATH})
-foreach(OCE_MODULE ${OCE_TOOLKIT_MODEL})
-	set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
-	set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
-  swig_add_module(${OCE_MODULE} python ${FILE})
-  swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES})
-endforeach(OCE_MODULE)
+#foreach(OCE_MODULE ${OCE_TOOLKIT_MODEL})
+set(OCE_MODULE "gp")
+set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
+set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
+swig_add_module(${OCE_MODULE} javascript ${FILE})
+swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES})
+#endforeach(OCE_MODULE)
 
 #################
 # Visualisation #
 #################
-if(PYTHONOCC_WRAP_VISU)
-  foreach(OCE_MODULE ${OCE_TOOLKIT_VISUALIZATION})
-    set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
-    set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
-    swig_add_module(${OCE_MODULE} python ${FILE})
-    swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES})
-  endforeach(OCE_MODULE)
-  # Build third part modules
-  # TODO : the following line is strange but necessary
-  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory src/Visualization)
-  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Visualization.i PROPERTIES CPLUSPLUS ON)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization)
-  set(VISUALIZATION_SOURCE_FILES
-  	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Visualization.i
-  	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Display3d.cpp
-  	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Tesselator.cpp
-  	)
-  swig_add_module(Visualization python ${VISUALIZATION_SOURCE_FILES})
-  if(APPLE)
-    # on OSX, always add /System/Library/Frameworks/Cocoa.framework, even
-    # if GLX is enabled
-    swig_link_libraries(Visualization ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
-  else(APPLE)
-    swig_link_libraries(Visualization ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES})
-  endif(APPLE)
-endif(PYTHONOCC_WRAP_VISU)
+# if(PYTHONOCC_WRAP_VISU)
+#   foreach(OCE_MODULE ${OCE_TOOLKIT_VISUALIZATION})
+#     set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
+#     set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
+#     swig_add_module(${OCE_MODULE} python ${FILE})
+#     swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES})
+#   endforeach(OCE_MODULE)
+#   # Build third part modules
+#   # TODO : the following line is strange but necessary
+#   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory src/Visualization)
+#   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Visualization.i PROPERTIES CPLUSPLUS ON)
+#   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization)
+#   set(VISUALIZATION_SOURCE_FILES
+#   	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Visualization.i
+#   	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Display3d.cpp
+#   	${CMAKE_CURRENT_SOURCE_DIR}/src/Visualization/Tesselator.cpp
+#   	)
+#   swig_add_module(Visualization python ${VISUALIZATION_SOURCE_FILES})
+#   if(APPLE)
+#     # on OSX, always add /System/Library/Frameworks/Cocoa.framework, even
+#     # if GLX is enabled
+#     swig_link_libraries(Visualization ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
+#   else(APPLE)
+#     swig_link_libraries(Visualization ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_VISUALIZATION_LIBRARIES})
+#   endif(APPLE)
+# endif(PYTHONOCC_WRAP_VISU)
 
-################
-# DataExchange #
-################
-if(PYTHONOCC_WRAP_DATAEXCHANGE)
-  foreach(OCE_MODULE ${OCE_TOOLKIT_DATAEXCHANGE})
-    set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
-    set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
-    swig_add_module(${OCE_MODULE} python ${FILE})
-    swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_DATAEXCHANGE_LIBRARIES})
-  endforeach(OCE_MODULE)
-endif(PYTHONOCC_WRAP_DATAEXCHANGE)
-
-########
-# OCAF #
-########
-if(PYTHONOCC_WRAP_OCAF)
-  foreach(OCE_MODULE ${OCE_TOOLKIT_OCAF})
-    set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
-    set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
-    swig_add_module(${OCE_MODULE} python ${FILE})
-    swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_OCAF_LIBRARIES})
-  endforeach(OCE_MODULE)
-endif(PYTHONOCC_WRAP_OCAF)
+# ################
+# # DataExchange #
+# ################
+# if(PYTHONOCC_WRAP_DATAEXCHANGE)
+#   foreach(OCE_MODULE ${OCE_TOOLKIT_DATAEXCHANGE})
+#     set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
+#     set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
+#     swig_add_module(${OCE_MODULE} python ${FILE})
+#     swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_DATAEXCHANGE_LIBRARIES})
+#   endforeach(OCE_MODULE)
+# endif(PYTHONOCC_WRAP_DATAEXCHANGE)
+#
+# ########
+# # OCAF #
+# ########
+# if(PYTHONOCC_WRAP_OCAF)
+#   foreach(OCE_MODULE ${OCE_TOOLKIT_OCAF})
+#     set(FILE ${SWIG_FILES_PATH}/${OCE_MODULE}.i)
+#     set_source_files_properties(${FILE} PROPERTIES CPLUSPLUS ON)
+#     swig_add_module(${OCE_MODULE} python ${FILE})
+#     swig_link_libraries(${OCE_MODULE} ${PYTHON_LIBRARIES} ${OCE_MODEL_LIBRARIES} ${OCE_OCAF_LIBRARIES})
+#   endforeach(OCE_MODULE)
+# endif(PYTHONOCC_WRAP_OCAF)
 
 ################
 # Installation #
@@ -281,24 +292,24 @@ foreach(OCE_MODULE ${OCE_TOOLKIT_MODEL})
 	install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
 	install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
 endforeach(OCE_MODULE)
-if(PYTHONOCC_WRAP_VISU)
-foreach(OCE_MODULE ${OCE_TOOLKIT_VISUALIZATION})
-    install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-    install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-endforeach(OCE_MODULE)
-endif(PYTHONOCC_WRAP_VISU)
-if(PYTHONOCC_WRAP_DATAEXCHANGE)
-foreach(OCE_MODULE ${OCE_TOOLKIT_DATAEXCHANGE})
-    install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-    install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-endforeach(OCE_MODULE)
-endif(PYTHONOCC_WRAP_DATAEXCHANGE)
-if(PYTHONOCC_WRAP_OCAF)
-foreach(OCE_MODULE ${OCE_TOOLKIT_OCAF})
-    install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-    install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
-endforeach(OCE_MODULE)
-endif(PYTHONOCC_WRAP_OCAF)
+# if(PYTHONOCC_WRAP_VISU)
+# foreach(OCE_MODULE ${OCE_TOOLKIT_VISUALIZATION})
+#     install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+#     install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+# endforeach(OCE_MODULE)
+# endif(PYTHONOCC_WRAP_VISU)
+# if(PYTHONOCC_WRAP_DATAEXCHANGE)
+# foreach(OCE_MODULE ${OCE_TOOLKIT_DATAEXCHANGE})
+#     install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+#     install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+# endforeach(OCE_MODULE)
+# endif(PYTHONOCC_WRAP_DATAEXCHANGE)
+# if(PYTHONOCC_WRAP_OCAF)
+# foreach(OCE_MODULE ${OCE_TOOLKIT_OCAF})
+#     install(FILES ${BUILD_DIR}/${OCE_MODULE}.py DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+#     install(FILES ${BUILD_DIR}/_${OCE_MODULE}.${EXTENSION} DESTINATION ${PYTHONOCC_INSTALL_DIRECTORY} )
+# endforeach(OCE_MODULE)
+# endif(PYTHONOCC_WRAP_OCAF)
 
 # install third part modules
 if(PYTHONOCC_WRAP_VISU)

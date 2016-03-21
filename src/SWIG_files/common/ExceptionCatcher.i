@@ -33,7 +33,7 @@ Exception handling
     {
         OCC_CATCH_SIGNALS
         $action
-    } 
+    }
     catch(Standard_Failure)
     {
 	    Handle(Standard_Failure) error = Standard_Failure::Caught ();
@@ -45,7 +45,7 @@ Exception handling
 	    strcat(message,"\n");
         strcat(message, error_message);
         // raise the python exception
-        PyErr_SetString(PyExc_RuntimeError, message);
+        //TODO: PyErr_SetString(PyExc_RuntimeError, message);
 	    return NULL;
     }
 }

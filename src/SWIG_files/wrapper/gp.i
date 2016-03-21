@@ -29,14 +29,14 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 
 %include ../common/CommonIncludes.i
 %include ../common/ExceptionCatcher.i
-%include ../common/FunctionTransformers.i
+/*%include ../common/FunctionTransformers.i*/
 %include ../common/Operators.i
 
 
 %include gp_headers.i
 
 
-%pythoncode {
+/*%pythoncode {
 def register_handle(handle, base_object):
     """
     Inserts the handle into the base object to
@@ -48,7 +48,7 @@ def register_handle(handle, base_object):
             base_object.thisown = False
     except:
         pass
-};
+};*/
 
 /* typedefs */
 /* end typedefs declaration */
@@ -11501,5 +11501,3 @@ class gp_XYZ {
 ") _CSFDB_Setgp_XYZz;
 		void _CSFDB_Setgp_XYZz (const Standard_Real p);
 };
-
-

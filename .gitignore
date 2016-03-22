@@ -55,3 +55,6 @@ docs/_build/
 build/
 cmake-build/
 node-modules/
+build-swig/
+generator/
+tmp/

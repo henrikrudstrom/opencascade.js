@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/tpaviot/pythonocc-core#readme",
   "devDependencies": {
+    "gulp-jasmine": "^2.3.0",
     "gulp-shell": "^0.5.2",
     "jasmine-node": "^1.14.5",
+    "run-sequence": "^1.1.5",
     "through": "^2.3.8"
   }
 }

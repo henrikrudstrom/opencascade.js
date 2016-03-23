@@ -48,8 +48,12 @@ def process_class(cls, constructors, functions):
     base = ""
     if len(cls.bases) > 0:
         base = " : " + cls.bases[0].related_class.name
+
+    name = re.sub("<\w+>", "", cls.name)
+    new_name = re.sub("^\w+_", "", cls.name)
     return {
-        "name": re.sub("<\w+>", "", cls.name),
+        "name": name,
+        "new_name": new_name,
         "base_class": base,
         "constructors": "".join(
             [t_calldef.render(name=c.name, decl=c) for c in constructors]),
@@ -59,7 +63,6 @@ def process_class(cls, constructors, functions):
 
 t_class = Template("""
 %nodefaultctor ${name};
-
 class ${name}${base_class}{
 	public:
     /* Constructors */
@@ -72,6 +75,7 @@ class ${name}${base_class}{
 def process_calldef(name, decl):
     return {
         "name": name,
+        "new_name": name[0].lower() + name[1:],
         "decl": print_calldef(decl)
     }
 
@@ -79,6 +83,8 @@ t_calldef = Template("""
 %feature("compactdefaultargs") ${name};
 ${decl};
 """, process_calldef)
+
+t_rename = Template("%rename(${new_name}) ${name};")
 
 
 def process_includes(name, includes):

@@ -23,9 +23,14 @@ var include = ["-I/usr/include/node", "-I/home/henrik/OCE/include/oce"]
 var swig_output = "build-swig"
 
 
-function execCmd(cmd, done){
+function execCmd(cmd, cwd, done){
+  options = {}
+  if(typeof cwd === "function")
+    done = cwd
+  else
+    options.cwd = cwd
   var exec = require('child_process').exec;
-  exec(cmd, function(error, stdout, stderr) {
+  exec(cmd, options, function(error, stdout, stderr) {
     if(error){
       console.log(stderr)
       throw new Error(error.toString())
@@ -50,7 +55,18 @@ function pythonTask(task, args, done){
   console.log(cmd)
   execCmd(cmd, done);
 }
-
+function buildConfiguration(moduleName){
+  var gyp = fs.readFileSync("binding_base.gyp", 'utf8');
+  console.log(gyp)
+  var base = JSON.parse(gyp);
+  var target = base.targets[0];
+  target.sources = ['../../build-swig/'+moduleName+'_wrap.cxx'];
+  target.target_name = moduleName;
+  var dest = path.join("build", moduleName)
+  mkdirp.sync(dest)
+  var gyp = JSON.stringify(base,null, ' ');
+  fs.writeFileSync(path.join(dest, "binding.gyp"), gyp);
+}
 
 
 
@@ -76,7 +92,31 @@ modules.forEach(function(moduleName){
   });
   gulp.task('swig:'+moduleName, function(done){
      runSequence('swig-generate:'+moduleName, 'swig-build:'+moduleName, done);
+
    });
+   var buildPath = path.join("build", moduleName)
+
+   gulp.task('gyp-clean:'+moduleName, function (done) {
+     if(!fs.exists(buildPath)) done()
+     else execCmd('node-gyp clean', buildPath, done)
+   });
+
+   gulp.task('gyp-configure:'+moduleName, ['gyp-clean:'+moduleName], function (done) {
+     buildConfiguration(moduleName)
+     execCmd('node-gyp configure', buildPath, done);
+   });
+
+   gulp.task('build:'+moduleName, ['gyp-configure:'+moduleName, "swig:"+moduleName], function (done) {
+     execCmd('node-gyp build', buildPath, function(){
+       mkdirp.sync("lib/occ")
+       execCmd("cp build/gp/build/Release/"+moduleName+".node lib/occ/", done)
+     })
+   });
+
+   gulp.task('test:'+moduleName, function(){
+   	gulp.src('spec/'+moduleName+'Spec.js').pipe(jasmine())
+   });
+
 });
 
 gulp.task('swig-generate', modules.map(function(module){ return 'swig-generate:'+module}));
@@ -85,23 +125,24 @@ gulp.task('swig', function(done){
   runSequence('swig-generate', 'swig-build', done);
 });
 
-gulp.task('gyp-clean', function (done) {
-  execCmd('node-gyp clean', done)
-});
 
-gulp.task('gyp-configure', ['gyp-clean'], function (done) {
-  execCmd('node-gyp configure', done)
-});
-
-gulp.task('gyp-build', ['gyp-configure'], function (done) {
-  execCmd('node-gyp build', done)
-});
-
-gulp.task('gyp-rebuild', ['gyp-configure', 'swig'], function (done) {
-  execCmd('node-gyp build', done)
-});
-
-gulp.task('build', ['gyp-build']);
+// gulp.task('gyp-clean', function (done) {
+//   execCmd('node-gyp clean', done)
+// });
+//
+// gulp.task('gyp-configure', ['gyp-clean'], function (done) {
+//   execCmd('node-gyp configure', done)
+// });
+//
+// gulp.task('gyp-build', ['gyp-configure'], function (done) {
+//   execCmd('node-gyp build', done)
+// });
+//
+// gulp.task('gyp-rebuild', ['gyp-configure', 'swig'], function (done) {
+//   execCmd('node-gyp build', done)
+// });
+//
+// gulp.task('build', ['gyp-build']);
 
 
 gulp.task('test', function(){

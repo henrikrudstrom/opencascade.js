@@ -71,20 +71,26 @@ def constructor_swig(cons):
 
 def filter_members(members):
     return members(
-        lambda f: f.access_type == "public" and f.virtuality == 'not virtual',
+        lambda f: f.access_type == "public" and f.virtuality == 'not virtual' and not f.name.startswith("_"),
         allow_empty=True)
 
-
-def generate_class(cls):
+renames = []
+def generate_class(cls, module_name):
+    renames.append(template.t_rename.render(name=cls.name, new_name=cls.name.replace(module_name+"_", "")))
     constructors = []
     if not cls.is_abstract:
         for func in filter_members(cls.constructors):
             constructors.append(func)
     print constructors
+    functions = list(filter_members(cls.member_functions))
+    for f in functions:
+        renames.append(template.t_rename.render(
+            name=cls.name + "::" + f.name,
+            new_name=f.name[0].lower()+f.name[1:]))
     code = class_template.render(
         cls=cls,
         constructors=constructors,
-        functions=filter_members(cls.member_functions))
+        functions=functions)
     return code.strip()
 
 
@@ -103,6 +109,9 @@ def generate_headers(name):
             continue
         dependencies.append(dep)
     return includes_template.render(includes=dependencies, name=name)
+
+
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -131,7 +140,7 @@ if __name__ == "__main__":
         if ignore(class_.name):
              continue
 
-        src = generate_class(class_).replace("%%", "%")
+        src = generate_class(class_, module_name).replace("%%", "%")
 
         path = "classes/"+class_.name+".i"
         write(os.path.join(module_name, path), src)
@@ -141,3 +150,4 @@ if __name__ == "__main__":
     write(module_name + "/includes.i", src)
     src = include_classes
     write(module_name + "/members.i", src)
+    write(module_name + "/renames.i", "\n".join(renames))

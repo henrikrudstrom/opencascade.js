@@ -1,17 +1,7 @@
+%include ../common/ModuleHeader.i
 %include ../gen/Standard/includes.i
-%module (package="OCC") gp
+%module (package="OCC") Standard
 
-#pragma SWIG nowarn=504,325,503
-
-%{
-#ifdef WNT
-#pragma warning(disable : 4716)
-#endif
-%}
-%include ../common/CommonIncludes.i
-%include ../common/ExceptionCatcher.i
-/*%include ../common/FunctionTransformers.i*/
-%include ../common/Operators.i
 
 /* typedefs */
 typedef bool Standard_Boolean;
@@ -42,10 +32,6 @@ typedef unsigned __int32 uint32_t;
 typedef size_t Standard_Size;
 typedef ostream Standard_OStream;
 typedef unsigned __int16 uint16_t;
-
-
-
-
 
 %ignore Standard_MMgrOpt;
 %ignore Standard_MMgrRaw;

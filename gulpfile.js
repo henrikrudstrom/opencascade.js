@@ -57,7 +57,7 @@ function pythonTask(task, args, done){
 gulp.task('init', function(){
   mkdirp(swig_output)
 })
-var modules = ["gp", "Standard"]
+var modules = ["gp", "Geom2d", "Standard"]
 
 
 gulp.task('load-data', function(done){
@@ -93,7 +93,7 @@ gulp.task('gyp-configure', ['gyp-clean'], function (done) {
   execCmd('node-gyp configure', done)
 });
 
-gulp.task('gyp-build', function (done) {
+gulp.task('gyp-build', ['gyp-configure'], function (done) {
   execCmd('node-gyp build', done)
 });
 

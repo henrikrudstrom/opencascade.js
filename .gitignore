@@ -54,7 +54,8 @@ docs/_build/
 
 build/
 cmake-build/
-node-modules/
+node_modules/
 build-swig/
 generator/
 tmp/
+src/swig/gen/

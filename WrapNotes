@@ -1,0 +1,65 @@
+
+
+Wrap
+* gp
+  - gce - constructors
+  - CPnts - various points on lines
+Geom
+  - GC - constructors
+
+Geom2d
+  - GCE2d - constructors
+  - GCPnts - various points on lines
+  - Geom2dEvaluator - interface for curve evaluation
+
+Advanced Curves:
+  - GeomConvert2d - Convert/Split curves (Splines and beziers)
+  - GeomConvert - Convert/Split curves
+  - Hermit - Reparametrize curve
+  - Approx - Create curve from adapted curve
+  - AdvApprox
+
+
+BndLib - Bounding box
+Extrema - Maximum distances
+GeomLib - Various computations
+GeomProjLib, ProjLib - Project curves on surfaces
+IntAna, IntAna2d - Analytic intersection
+
+GProp - Geometric Solid Properties (Mass, inertia etc)
+Geom2dLProp, LProp - Curve properties
+
+Geom2dAdaptor, Adaptor2d, Adaptor3d, GeomAdaptor - Adaptors
+
+
+Package Geom
+Package
+Package GeomEvaluator
+Package GeomLProp
+Package LProp3d
+Package TColGeom
+Package TopAbs
+
+
+
+
+
+
+TColGeom2d - Lists
+
+
+
+
+
+
+
+
+
+
+
+
+# Not wrap
+GeomTools - Read write Geometry
+FEmTool - Finite Elements
+Package AdvApp2Var - No idea
+AppCont, AppDef, AppParCurves - something with curves?

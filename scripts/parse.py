@@ -15,12 +15,13 @@ def parse_files(path, files):
         xml_generator="castxml",
         include_paths=[path],
         define_symbols=[],
+        keep_xml = True
     )
     def cache_file(filename):
         return parser.file_configuration_t(
             data=filename,
             content_type=parser.CONTENT_TYPE.CACHED_SOURCE_FILE,
-             cached_source_file=filename.replace(path, "tmp/xml")+".xml")
+            cached_source_file=filename.replace(path, "tmp/xml")+".xml")
     cached_files = [cache_file(f) for f in files]
 
 

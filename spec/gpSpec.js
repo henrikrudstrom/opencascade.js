@@ -1,4 +1,5 @@
 var gp = require("../lib/occ/gp.node");
+
 //var Geom2d = require("../build/Release/Geom2d.node");
 
 describe("module gp", function() {
@@ -22,6 +23,9 @@ describe("module gp", function() {
     expect(xy.y()).toBe(20)
     xy.setX(25)
     expect(xy.x()).toBe(25)
+    yx = new gp.XY(100,200)
+    xyx = xy.added(yx)
+    expect(xyx.x()).toBe(125)
   })
 
   it("can load gp", function() {
@@ -29,6 +33,11 @@ describe("module gp", function() {
     var p1 = new gp.XY()
     var p2 = new gp.XY(p1)
     expect(p2).not.toBe(undefined)
+  });
+
+  it("Quaternion", function(){
+
+
   });
   //
   // it("can handle Standard_Real", function() {

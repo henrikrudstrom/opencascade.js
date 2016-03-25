@@ -44,10 +44,10 @@ def print_calldef(calldef):
     return res
 
 
-def process_class(cls, constructors, functions):
+def process_class(cls, constructors, functions, typedefs):
     base = ""
     if len(cls.bases) > 0:
-        base = " : " + cls.bases[0].related_class.name
+        base = " : public " + cls.bases[0].related_class.name
 
     name = re.sub("<\w+>", "", cls.name)
     new_name = re.sub("^\w+_", "", cls.name)
@@ -58,11 +58,13 @@ def process_class(cls, constructors, functions):
         "constructors": "".join(
             [t_calldef.render(name=c.name, decl=c) for c in constructors]),
         "functions": "".join(
-            [t_calldef.render(name=c.name, decl=c) for c in functions])
+            [t_calldef.render(name=c.name, decl=c) for c in functions]),
+        "typedefs": "\n".join([td.decl_string for td in typedefs])
     }
 
 t_class = Template("""
 %nodefaultctor ${name};
+
 class ${name}${base_class}{
 	public:
     /* Constructors */

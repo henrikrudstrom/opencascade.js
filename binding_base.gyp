@@ -6,7 +6,8 @@
             ],
           "cflags": [
             "-DCSFDB", "-DHAVE_CONFIG_H", "-DOCC_CONVERT_SIGNALS", "-D_OCC64", "-Dgp_EXPORTS", "-Os", "-DNDEBUG", "-fPIC",
-            "-fpermissive"
+            "-fpermissive",
+            "-DSWIG_TYPE_TABLE=occ.js"
           ],
           "cflags!": ["-fno-exceptions"],
           "cflags_cc!": ["-fno-exceptions"],

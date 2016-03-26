@@ -115,7 +115,7 @@ def w_enum(e):
     return Dict(
         name=clean_name(e.name),
         cls="enum",
-        values=str(e.values).replace("(", "[").replace(")","]"))
+        values=e.values)
 
 def w_typedef(td):
     return Dict(name=clean_name(td.name), type=str(td.type), cls="typedef")

@@ -7581,22 +7581,138 @@
   ], 
   "enums": [
     {
-      "values": "[['Standard_Void', 0], ['Standard_Char', 1], ['Standard_ExtChar', 2], ['Standard_LongInt', 3], ['Standard_Bool', 4], ['Standard_Float', 5], ['Standard_LongDouble', 6], ['Standard_String', 7], ['Standard_EString', 8], ['Standard_EntryAddress', 9], ['Standard_DataAddress', 10], ['Standard_EngineHandle', 11], ['Standard_Long64', 12], ['Standard_Array', 13]]", 
+      "values": [
+        [
+          "Standard_Void", 
+          0
+        ], 
+        [
+          "Standard_Char", 
+          1
+        ], 
+        [
+          "Standard_ExtChar", 
+          2
+        ], 
+        [
+          "Standard_LongInt", 
+          3
+        ], 
+        [
+          "Standard_Bool", 
+          4
+        ], 
+        [
+          "Standard_Float", 
+          5
+        ], 
+        [
+          "Standard_LongDouble", 
+          6
+        ], 
+        [
+          "Standard_String", 
+          7
+        ], 
+        [
+          "Standard_EString", 
+          8
+        ], 
+        [
+          "Standard_EntryAddress", 
+          9
+        ], 
+        [
+          "Standard_DataAddress", 
+          10
+        ], 
+        [
+          "Standard_EngineHandle", 
+          11
+        ], 
+        [
+          "Standard_Long64", 
+          12
+        ], 
+        [
+          "Standard_Array", 
+          13
+        ]
+      ], 
       "name": "Standard_InternalType", 
       "cls": "enum"
     }, 
     {
-      "values": "[['Standard_IsNothing', 0], ['Standard_IsAddress', 1], ['Standard_IsTransient', 2], ['Standard_IsPersistent', 3], ['Standard_IsNotLoaded', 4]]", 
+      "values": [
+        [
+          "Standard_IsNothing", 
+          0
+        ], 
+        [
+          "Standard_IsAddress", 
+          1
+        ], 
+        [
+          "Standard_IsTransient", 
+          2
+        ], 
+        [
+          "Standard_IsPersistent", 
+          3
+        ], 
+        [
+          "Standard_IsNotLoaded", 
+          4
+        ]
+      ], 
       "name": "Standard_WayOfLife", 
       "cls": "enum"
     }, 
     {
-      "values": "[['Standard_IsUnKnown', 0], ['Standard_IsClass', 1], ['Standard_IsEnumeration', 2], ['Standard_IsPrimitive', 3], ['Standard_IsImported', 4], ['Standard_IsPackage', 5]]", 
+      "values": [
+        [
+          "Standard_IsUnKnown", 
+          0
+        ], 
+        [
+          "Standard_IsClass", 
+          1
+        ], 
+        [
+          "Standard_IsEnumeration", 
+          2
+        ], 
+        [
+          "Standard_IsPrimitive", 
+          3
+        ], 
+        [
+          "Standard_IsImported", 
+          4
+        ], 
+        [
+          "Standard_IsPackage", 
+          5
+        ]
+      ], 
       "name": "Standard_KindOfType", 
       "cls": "enum"
     }, 
     {
-      "values": "[['Standard_HandlerVoid', 0], ['Standard_HandlerJumped', 1], ['Standard_HandlerProcessed', 2]]", 
+      "values": [
+        [
+          "Standard_HandlerVoid", 
+          0
+        ], 
+        [
+          "Standard_HandlerJumped", 
+          1
+        ], 
+        [
+          "Standard_HandlerProcessed", 
+          2
+        ]
+      ], 
       "name": "Standard_HandlerStatus", 
       "cls": "enum"
     }

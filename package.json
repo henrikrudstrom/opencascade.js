@@ -32,6 +32,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-run": "^1.6.12",
     "gulp-shell": "^0.5.2",
+    "hash-files": "^1.1.0",
     "jasmine": "^2.4.1",
     "jasmine-node": "^1.14.5",
     "json-query": "^1.8.0",

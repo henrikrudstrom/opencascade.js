@@ -1,39 +1,28 @@
 var fs = require("fs");
 var mkdirp = require('mkdirp');
 var path = require('path');
-var data = JSON.parse(fs.readFileSync("config/gp_proc.json"))
+//var data = JSON.parse(fs.readFileSync("config/gp_proc.json"))
 
-function render(template, data) {
-  template = template.toString()
-  console.log(data)
-  for (var key in data) {
+var loadConfig = require("./config.js")
+var loadTree = require("./tree.js")
 
-    template = template.replace(new RegExp("<#" + key + ">", "g"), data[key])
+function ignoreClass(config) {
+  return function(obj) {
+    return !config.ignore(obj.name)
   }
-  return template;
 }
 
-t_class =
-  `%nodefaultctor <#name>;
+function ignoreMember(cls, config) {
+  return function(obj) {
+    return !config.ignore(cls.name, obj.name);
+  }
+}
 
-class <#name><#base_class>{
-	public:
-    /* Constructors */
-    <#constructors>
-    /* Member functions */
-    <#functions>
-};
-`
-
-
-t_rename = "%rename(${new_name}) ${name};"
-
-t_includes =
-  `/* includes for module: <#name> */
-%{
-<#includes>
-%}
-`
+function isClass(name) {
+  return function(member) {
+    return member.cls !== name;
+  }
+}
 
 
 function renderArg(arg) {
@@ -42,7 +31,6 @@ function renderArg(arg) {
     res += "=" + arg.default
   }
   return res;
-
 }
 
 function renderFunction(func) {
@@ -53,17 +41,10 @@ function renderFunction(func) {
 
   return `
     %feature("compactdefaultargs") ${func.name};
-    ${stat}${func.returnType + " "}${func.name}${cons}(${args});
-    `
+    ${stat}${func.returnType + " "}${func.name}${cons}(${args});`
 }
 
-function isClass(name) {
-  return function(member) {
-    return member.cls !== name;
-  }
-}
-
-function renderSwigClass(cls, config) {
+function renderClass(cls, config) {
   var functions = cls.members
     .filter(isClass("calldef"))
     .filter(ignoreMember(cls, config))
@@ -87,126 +68,101 @@ class ${cls.name}${base} {
 `
 }
 
-function renderTypedef(td){
-  
+function renderTypedef(td) {
+
 }
 
-function renderEnum(enum){
-  var values = enum.values.map(function(v){
+function renderEnum(en) {
+  var values = en.values.map(function(v) {
     return `  ${v[0]} = ${v[1]}`;
   }).join("\n");
-  return `enum ${enum.name} {
-    ${values};
-  }`
+  return `enum ${en.name} {\n${values};\n}`
 }
 
-function ignoreMember(cls, config) {
-  return function(obj) {
-    return !config.ignore.some(function(ign) {
-      if (!ign.parent) return false;
-      if (cls.name != ign.parent) return false;
-      return obj.name === ign.name;
-    });
-  }
-}
-function ignoreClass(config) {
+module.exports = function(moduleName) {
+  var tree = loadTree(`data/tree/${moduleName}.json`);
+  var config = loadConfig(`data/config/${moduleName}.json`)
+  var basePath = `build/swig/${moduleName}`
 
-  return function(obj) {
-    var ignore = !config.ignore.some(function(ign) {
-      return obj.name === ign.name;
-    });
-    if(!ignore) console.log("IGNORE", obj.name)
-    return ignore;
+  function writeFile(dest, src) {
+    var fullPath = path.join(basePath, dest);
+    mkdirp.sync(path.dirname(fullPath));
+    fs.writeFileSync(fullPath, src);
   }
 
-}
+  this.renderClasses = function(moduleName) {
+    var classes = tree.classes.filter(ignoreClass(config));
+
+    classes.forEach(function(cls) {
+      var src = renderClass(cls, config);
+      writeFile(`/classes/${cls.name}.i`, src)
+    });
+  }
+
+  this.renderHeaders = function(moduleName) {
+    var src = tree.headers.map(function(header) {
+      return `#include<${header}>`;
+    }).join("\n")
+    src = `%{\n${src}\n%}`
+    writeFile("headers.i", src)
+  }
+
+  this.renderRenames = function(moduleName) {
+    var renames = []
+    config.data.rename.forEach(function(rename) {
+      var target = rename.name;
+      if (rename.parent)
+        target = `${rename.parent}::${target}`;
+      renames.push(`%rename(${rename.newName}) ${target};`)
+    });
+    var src = renames.join("\n");
+    writeFile("renames.i", src)
+  }
+
+  this.renderModule = function(moduleName) {
+    var dependencies = tree.dependencies.map(function(dep) {
+      return `%import ../${dep}/module.i;\n%include ../${dep}/headers.i`
+    }).join("\n");
+    var custom = "";
+    if (fs.exists(`src/swig//custom/${moduleName}.i`))
+      custom = `\n%include ../custom/${moduleName}.i\n`;
+
+    var typedefs = tree.typedefs
+      .filter(ignoreClass(config))
+      .map(renderTypedef)
+      .join("\n")
+    if (typedefs) typedefs += "\n"
+
+    var enums = tree.enums
+      .filter(ignoreClass(config))
+      .map(renderEnum)
+      .join("\n")
+    if (enums) enums += "\n"
+
+    var classes = tree.classes
+      .filter(ignoreClass(config))
+      .map(function(cls) {
+        return `%include classes/${cls.name}.i`
+      })
+      .join("\n");
+    if (classes) classes += "\n"
 
 
+    src = `\
+// Module ${moduleName}
+%include ../common/ModuleHeader.i
+%include headers.i
 
-module.exports.renderClasses = function(moduleName) {
-  var tree = require("./tree.js").loadFromPath(`data/tree/${moduleName}.json`);
-  var config = JSON.parse(fs.readFileSync(`data/config/${moduleName}.json`));
+//dependencies
+${dependencies}
 
-  console.log("render" + module, tree.classes.length)
-  var classes = tree.classes.filter(ignoreClass(config));
-  console.log(classes.length)
-  classes.forEach(function(cls) {
-    var src = renderSwigClass(cls, config);
-    var file = `build/swig/${moduleName}/classes/${cls.name}.i`;
-    mkdirp.sync(path.dirname(file));
-    fs.writeFileSync(file, src);
-  });
-}
-
-module.exports.renderHeaders = function(moduleName) {
-  var tree = require("./tree.js").loadFromPath(`data/tree/${moduleName}.json`);
-  console.log("HEADERSS")
-  console.log(tree.headers)
-  var src = tree.headers.map(function(header){
-    return `#include<${header}>`;
-  }).join("\n")
-  src = `%{\n${src}\n%}`
-  var file = `build/swig/${moduleName}/headers.i`;
-  mkdirp.sync(path.dirname(file));
-  fs.writeFileSync(file, src);
-}
-
-module.exports.renderRenames = function(moduleName) {
-  var config = JSON.parse(fs.readFileSync(`data/config/${moduleName}.json`));
-  var renames = []
-
-  console.log(config.data)
-  config.rename.forEach(function(rename) {
-    var target = rename.name;
-    if (rename.parent)
-      target = `${rename.parent}::${target}`;
-    renames.push(`%rename(${rename.newName}) ${target};`)
-  });
-  var src = renames.join("\n");
-  var file = `build/swig/${moduleName}/renames.i`;
-  mkdirp.sync(path.dirname(file));
-  fs.writeFileSync(file, src);
-}
-
-module.exports.renderModule = function(moduleName) {
-  var tree = require("./tree.js").loadFromPath(`data/tree/${moduleName}.json`);
-  var config = JSON.parse(fs.readFileSync(`data/config/${moduleName}.json`));
-
-  var dependencies = tree.dependencies.map(function(dep){
-    return `%import ${dep}.i;\n%include ../${dep}/headers.i`
-  }).join("\n");
-  var custom = "";
-  if(fs.exists(`src/swig//custom/${moduleName}.i`))
-    custom = `\n%include ../custom/${moduleName}.i\n`;
-
-  var typedefs = tree.typedefs
-    .filter(ignoreClass(config))
-    .map(renderTypedef)
-    .join("\n")
-
-  var enums = tree.enums
-    .filter(ignoreClass(config))
-    .map(renderEnum)
-    .join("\n")
-
-  var classes = tree.classes
-    .filter(ignoreClass(config))
-    .map(function(cls){ return `%include classes/${cls.name}.i`})
-    .join("\n");
-
-
-  src = `
-  %include ../common/ModuleHeader.i
-  %include ../gen/${moduleName}/headers.i
-
-  ${dependencies}
-
-  %include ../gen/${moduleName}/renames.i
-  ${custom}
-  %module (package="OCC") ${moduleName}
-  ${typedefs}
-  ${enums}
-  ${classes}
-  `
-
+%include renames.i
+${custom}
+%module (package="OCC") ${moduleName}
+${typedefs}
+${enums}
+${classes}
+`
+    writeFile("module.i", src)
+  }
 }

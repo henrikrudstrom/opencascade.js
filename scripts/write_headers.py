@@ -13,40 +13,76 @@ from collections import OrderedDict
 import json
 
 
+with open("config/ignore_headers.json", "r") as f:
+    ignore_list = json.loads(f.read())
+def ignore(header):
+    header = header.replace(".hxx", "")
+    header = re.sub("<\w+>", "", header)
+    header = header.replace(oce_include + "/", "")
+    print "header", header
+    ignored = header in ignore_list
+    if(ignored):
+        print "Ignored " + header
+    return ignored
+
 
 class Dict(OrderedDict):
     pass
 
-test = Dict(a=10, k=100, b=20)
-
-
-print json.dumps(test, indent=4, separators=(',', ': '))
 class Module:
 
     def __init__(self, name, output_path):
         self.name = name
         self.output_path = output_path
         self.files = glob(oce_include + "/" + name + "_*.hxx")
-
+        self.files = filter(lambda h: not ignore(h), self.files)
         self.ns = parse.parse_files(oce_include, self.files)
-
+        print "===================loaded"
 
 #json.dumps(classes[1], cls=ComplexEncoder)
 
 
-def iter(decls, func):
-    return list([func(decl) for decl in decls])
 
+
+def iter(decls, func):
+    return [func(decl) for decl in list(decls)]
+
+
+def select_module(module, name):
+    if name.startswith(module):
+        print "FOUND", name
+        return True
+    if name.startswith("Handle_" + module):
+        return True
+
+    return False
+
+def add_if(d, value, name):
+    if(value):
+        d[name] = value
 def clean_name(name):
     if name.startswith("::"):
         return name[2:];
     return name
+def type(t):
+    if isinstance(t, declarations.cpptypes.declarated_t):
+        return str(t)
+    if isinstance(t, declarations.cpptypes.void_t):
+        return str(t)
+    return type(t.base)
+
+def with_parent(parent, fn):
+    def f(obj):
+        return fn(obj, parent)
+    return f
+
+
 
 def w_arg(arg):
     tp = str(arg.type)
     if("const" in tp):
         tp = "const " + tp.replace("const ", "")
-    d = Dict(name=arg.name, type=clean_name(tp))
+    d = Dict(name=arg.name, type=clean_name(type(arg.type)), decl=tp)
     add_if(d, arg.default_value, "default")
     return d
 
@@ -56,21 +92,22 @@ def w_member_function(cd, parent):
         parent=parent.name,
         cls="memfun",
         arguments=iter(cd.arguments, w_arg),
-        returnType=str(cd.return_type),
+        returnType=str(cd.return_type) if cd.return_type else ""
 
         )
     add_if(d, cd.has_static, "static")
     add_if(d, cd.has_extern, "extern")
     add_if(d, cd.has_const, "const")
     add_if(d, cd.is_artificial, "artificial")
-    add_if(d, cd.does_throw, "throws")
-    add_if(d, cd.virtuality, "virtuality")
+    add_if(d, cd.does_throw, "throws") #TODO
+    add_if(d, cd.exceptions, "exceptions") #TODO
+    add_if(d, cd.virtuality.replace("not virtual", ""), "virtuality")
     return d
 
-def w_constructor(cc):
-    member = w_member_function(cc)
+def w_constructor(cc, parent):
+    member = w_member_function(cc, parent)
     member['cls']="constructor"
-    add_if(d, cc.is_copy_constructor, "copyConstructor")
+    add_if(member, cc.is_copy_constructor, "copyConstructor")
     #member["trivialConstructor"] = cc.is_trivial_constructor
     return member
 
@@ -81,33 +118,21 @@ def w_enum(e):
         values=str(e.values).replace("(", "[").replace(")","]"))
 
 def w_typedef(td):
-    return Dict(name=clean_name(td.name), parent=parent.name, type=str(td.type), cls="typedef")
+    return Dict(name=clean_name(td.name), type=str(td.type), cls="typedef")
 
-def select_module(module, name):
-    #print module
-    if name.startswith(module):
-        return True
-    if name.startswith("Handle_" + module):
-        return True
-    #print "FOUND", name
-    return False
 
-def add_if(d, value, name):
-    if(value):
-        d["virtual"] = name
 
 def s_class(module):
     def select(obj):
-        #print obj, obj.name
-        return select_module(module, obj.name)
+        return select_module(module, obj.name) and not ignore(obj.name)
     return select
     #return lambda obj:
 
 def s_typedef(module):
-    return lambda obj: select_module(module, obj.name)
+    return lambda obj: select_module(module, obj.name) and not ignore(obj.name)
 
 def s_enum(module):
-    return lambda obj: select_module(module, obj.name)
+    return lambda obj: select_module(module, obj.name) and not ignore(obj.name)
 
 
 def w_base(info):
@@ -117,10 +142,7 @@ def w_base(info):
     )
     add_if(d, info.is_virtual, "virtual")
     return d
-def with_parent(parent, fn):
-    def f(obj):
-        return fn(obj, parent)
-    return f
+
 
 def w_class(cls):
     return Dict(name=cls.name,
@@ -133,7 +155,7 @@ def w_class(cls):
         # enums=iter(cls.enums(), w_enum),
         # #typedefs=iter(cls.typedefs(), w_typedef),
         #
-        # constructors=iter(cls.constructors(), w_constructor),
+        constructors=iter(cls.constructors(), with_parent(cls, w_constructor)),
         members=iter(cls.member_functions(), with_parent(cls, w_member_function)),
 
         #variables=iter(cls.variables(), w_variable)
@@ -142,12 +164,16 @@ def w_class(cls):
 def w_module(ns, name):
     return Dict(
         name=name,
-        classes=iter(ns.classes(s_class(name), allow_empty=True), w_class),
+        classes=map(w_class, ns.classes(s_class(name))),
         typedefs=iter(ns.typedefs(s_typedef(name), allow_empty=True), w_typedef),
         enums=iter(ns.enums(s_enum(name), allow_empty=True), w_enum),
+        headers=get_headers(name)
     )
-module = Module("gp", "")
-data = w_module(module.ns, module.name)
+
+def get_headers(name):
+    headers =  [os.path.basename(p) for p in glob(oce_include + "/" + name +"_*.hxx")]
+    headers = filter(lambda header: not ignore(header), headers)
+    return headers
 
 
 def wrapped_classes(module):
@@ -159,9 +185,16 @@ def wrapped_classes(module):
 
     return classes
 
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        module_name = sys.argv[1]
+    if len(sys.argv) >2:
+        output_path = sys.argv[2]
+    else:
+        exit(1)
+    module = Module(module_name, "")
+    data = w_module(module.ns, module_name)
 
-    #return json.JSONEncoder.default(self, obj)
-import yaml
-classes = wrapped_classes(module)
-with open("config/gp_tree.json", "w") as f:
-    f.write(json.dumps(data, sort_keys=False, indent=2))
+    classes = wrapped_classes(module)
+    with open(output_path, "w") as f:
+        f.write(json.dumps(data, sort_keys=False, indent=2))

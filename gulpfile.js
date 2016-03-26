@@ -269,16 +269,14 @@ gulp.task('test', function() {
   gulp.src('spec/basicSpec.js').pipe(jasmine())
 });
 
-//
-// var testpipe = through.obj(function (file, enc, cb) {
-//           console.log(file);
-//           this.push(file);
-//           cb();
-//       });
-//
-//
-// gulp.task('testtest', function() {
-//   gulp.src('spec/querySpec.js')
-//     .pipe(testpipe)
-//     .on('error', function(e) { throw e; });
-// });
+
+
+
+var requireDir = require('require-dir');
+var dir = requireDir('./tasks');
+
+gulp.task('testtest', function() {
+  gulp.src('config/gp.json')
+    .pipe(testpipe)
+    .on('error', function(e) { throw e; });
+});

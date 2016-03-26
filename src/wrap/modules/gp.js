@@ -1,10 +1,17 @@
 
 var camelCase = require('camel-case');
+var renameModule = function(moduleName){
+  return function(name){
+    return name.replace(moduleName+"_", "")
+  }
+}
 
-//module.export = function(tree, flag) {
 module.exports = function(tree, flag, rename, ignore) {
-  //console.log(tree.types("gp_Pnt", flag("rename", "Point")));
+
+
+  tree.types("*").members("*", rename(camelCase));
+  tree.types("*", rename(renameModule("gp")))
+  tree.types("*").members("_*", ignore());
+
   tree.types("gp_Pnt", rename("Point"));
-  tree.types("gp_Pnt2d").members("*", rename(camelCase));
-  tree.types("gp_Vec*", ignore);
 };

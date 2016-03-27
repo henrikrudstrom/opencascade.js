@@ -19,10 +19,7 @@ def ignore(header):
     header = header.replace(".hxx", "")
     header = re.sub("<\w+>", "", header)
     header = header.replace(oce_include + "/", "")
-    print "header", header
     ignored = header in ignore_list
-    if(ignored):
-        print "Ignored " + header
     return ignored
 
 
@@ -37,7 +34,7 @@ class Module:
         self.files = glob(oce_include + "/" + name + "_*.hxx")
         self.files = filter(lambda h: not ignore(h), self.files)
         self.ns = parse.parse_files(oce_include, self.files)
-        print "===================loaded"
+        #print "===================loaded"
 
 #json.dumps(classes[1], cls=ComplexEncoder)
 
@@ -50,7 +47,6 @@ def iter(decls, func):
 
 def select_module(module, name):
     if name.startswith(module):
-        print "FOUND", name
         return True
     if name.startswith("Handle_" + module):
         return True

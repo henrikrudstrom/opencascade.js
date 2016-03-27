@@ -1,0 +1,1149 @@
+{
+  "AIS": [
+    "Standard",
+    "Quantity",
+    "Prs3d",
+    "TCollection",
+    "StdSelect",
+    "TopLoc",
+    "Aspect",
+    "Graphic3d",
+    "TColgp",
+    "TopoDS",
+    "SelectMgr",
+    "TColStd",
+    "TopAbs",
+    "gp",
+    "Select3D",
+    "Bnd",
+    "DsgPrs",
+    "Image"
+  ],
+  "Adaptor2d": [
+    "GeomAbs",
+    "TColStd",
+    "Standard",
+    "gp"
+  ],
+  "AdvApprox": [
+    "Standard",
+    "TColStd",
+    "TColgp"
+  ],
+  "AppBlend": [
+    "Standard",
+    "TColgp",
+    "TColStd"
+  ],
+  "AppCont": [
+    "Standard",
+    "gp",
+    "TColgp"
+  ],
+  "AppDef": [
+    "Standard",
+    "gp",
+    "TColgp",
+    "math",
+    "AppParCurves",
+    "TColStd",
+    "GeomAbs",
+    "FEmTool",
+    "Approx"
+  ],
+  "AppParCurves": [
+    "TColStd",
+    "Standard",
+    "gp",
+    "TColgp",
+    "math"
+  ],
+  "AppStdL": [
+    "TColStd"
+  ],
+  "Approx": [
+    "Standard",
+    "AppCont",
+    "gp",
+    "AppParCurves",
+    "TColgp",
+    "TColStd",
+    "GeomAbs",
+    "AdvApprox",
+    "Adaptor3d"
+  ],
+  "ApproxInt": [
+    "Standard",
+    "gp"
+  ],
+  "Aspect": [
+    "Standard",
+    "Quantity",
+    "TCollection",
+    "TShort",
+    "TColQuantity",
+    "TColStd"
+  ],
+  "BOPAlgo": [
+    "Standard",
+    "BOPCol",
+    "TopAbs",
+    "BOPDS",
+    "TopoDS",
+    "gp",
+    "IntSurf",
+    "BOPTools"
+  ],
+  "BOPCol": [
+    "Bnd",
+    "Standard"
+  ],
+  "BOPInt": [
+    "TopoDS",
+    "gp",
+    "Standard",
+    "IntTools",
+    "Bnd"
+  ],
+  "BRep": [
+    "TopLoc",
+    "Standard",
+    "gp",
+    "GeomAbs",
+    "TopoDS"
+  ],
+  "BRepAdaptor": [
+    "Standard",
+    "TopoDS",
+    "GeomAbs",
+    "TColStd",
+    "gp"
+  ],
+  "BRepApprox": [
+    "Standard",
+    "TColgp",
+    "math",
+    "BRepAdaptor",
+    "GeomAbs",
+    "TColStd",
+    "gp",
+    "IntSurf",
+    "AppParCurves",
+    "IntImp",
+    "Approx"
+  ],
+  "BRepBlend": [
+    "Blend",
+    "Standard",
+    "IntSurf",
+    "GeomAbs",
+    "TColStd",
+    "gp",
+    "math",
+    "BlendFunc",
+    "TColgp",
+    "Approx",
+    "TopAbs"
+  ],
+  "BRepBuilderAPI": [
+    "Bnd",
+    "Standard",
+    "TopoDS",
+    "gp",
+    "TopTools",
+    "TColStd",
+    "TopLoc",
+    "TColgp"
+  ],
+  "BRepCheck": [
+    "TopoDS",
+    "Standard",
+    "TopTools",
+    "TopAbs"
+  ],
+  "BRepClass": [
+    "gp",
+    "Standard",
+    "TopAbs"
+  ],
+  "BRepClass3d": [
+    "Standard",
+    "TopoDS",
+    "gp",
+    "TopAbs"
+  ],
+  "BRepExtrema": [
+    "Standard",
+    "TopoDS",
+    "gp",
+    "Extrema",
+    "TopTools",
+    "Bnd"
+  ],
+  "BRepFeat": [
+    "TopoDS",
+    "gp",
+    "TopTools",
+    "Standard",
+    "LocOpe",
+    "BRepAlgoAPI",
+    "TColGeom",
+    "BOPCol"
+  ],
+  "BRepFilletAPI": [
+    "TopoDS",
+    "Standard",
+    "GeomAbs",
+    "TColgp",
+    "ChFi3d"
+  ],
+  "BRepGProp": [
+    "TopoDS",
+    "Standard",
+    "TColStd",
+    "gp",
+    "GeomAbs",
+    "GProp",
+    "BRepAdaptor"
+  ],
+  "BRepIntCurveSurface": [
+    "TopoDS",
+    "GeomAdaptor",
+    "Standard",
+    "gp"
+  ],
+  "BRepLProp": [
+    "BRepAdaptor",
+    "Standard",
+    "gp"
+  ],
+  "BRepLib": [
+    "TopoDS",
+    "Standard",
+    "TopTools",
+    "TopAbs",
+    "gp"
+  ],
+  "BRepMAT2d": [
+    "Standard",
+    "TopoDS",
+    "MAT"
+  ],
+  "BRepMesh": [
+    "TopoDS",
+    "Standard",
+    "gp",
+    "BRepAdaptor",
+    "TopTools",
+    "Bnd",
+    "TopAbs",
+    "TColStd",
+    "TColgp",
+    "NCollection",
+    "TopLoc"
+  ],
+  "BRepOffset": [
+    "TopoDS",
+    "Standard",
+    "GeomAbs",
+    "TopTools",
+    "BRepAlgo",
+    "TopAbs"
+  ],
+  "BRepOffsetAPI": [
+    "TColStd",
+    "Standard",
+    "TopoDS",
+    "gp",
+    "Approx",
+    "GeomAbs",
+    "TopTools",
+    "BRepBuilderAPI",
+    "BRepFill"
+  ],
+  "BRepPrimAPI": [
+    "TopoDS"
+  ],
+  "BRepProj": [
+    "TopoDS"
+  ],
+  "BRepSweep": [
+    "TopoDS",
+    "TopAbs",
+    "Standard",
+    "Sweep",
+    "gp"
+  ],
+  "BRepTools": [
+    "TopoDS",
+    "TopTools",
+    "TopLoc",
+    "Standard",
+    "gp",
+    "TColgp",
+    "TopAbs"
+  ],
+  "BRepTopAdaptor": [
+    "TopoDS",
+    "Standard",
+    "gp"
+  ],
+  "BiTgte": [
+    "Standard",
+    "TopoDS",
+    "Bnd",
+    "TopTools",
+    "BRepOffset",
+    "GeomAbs",
+    "TColStd",
+    "gp"
+  ],
+  "Bisector": [
+    "gp",
+    "Standard",
+    "TColStd",
+    "IntRes2d"
+  ],
+  "Blend": [
+    "gp",
+    "Standard",
+    "math",
+    "TColStd",
+    "GeomAbs",
+    "TColgp"
+  ],
+  "BlendFunc": [
+    "Standard",
+    "math",
+    "gp",
+    "TColStd",
+    "GeomAbs",
+    "Blend",
+    "TColgp"
+  ],
+  "Bnd": [
+    "gp",
+    "Standard"
+  ],
+  "BndLib": [
+    "Adaptor3d",
+    "Standard",
+    "Bnd",
+    "Adaptor2d"
+  ],
+  "CPnts": [
+    "Standard",
+    "Adaptor3d",
+    "Adaptor2d"
+  ],
+  "CSLib": [
+    "Standard",
+    "gp"
+  ],
+  "ChFi2d": [
+    "TopoDS",
+    "gp",
+    "Standard"
+  ],
+  "ChFi3d": [
+    "Standard",
+    "GeomAbs",
+    "TopoDS",
+    "ChFiDS",
+    "math",
+    "TopAbs",
+    "Blend",
+    "gp",
+    "AppBlend"
+  ],
+  "ChFiDS": [
+    "gp",
+    "Standard",
+    "TopoDS",
+    "TopAbs",
+    "GeomAbs",
+    "TColStd"
+  ],
+  "Contap": [
+    "GeomAbs",
+    "TColStd",
+    "Standard",
+    "gp",
+    "IntSurf",
+    "math",
+    "IntWalk"
+  ],
+  "Dico": [
+    "Standard",
+    "TCollection"
+  ],
+  "Draft": [
+    "TopoDS",
+    "Standard",
+    "gp",
+    "TopLoc",
+    "TopAbs"
+  ],
+  "DsgPrs": [
+    "TCollection",
+    "gp",
+    "Standard",
+    "TopoDS"
+  ],
+  "Dynamic": [
+    "Standard",
+    "TCollection"
+  ],
+  "Expr": [
+    "Standard",
+    "TColStd",
+    "TCollection"
+  ],
+  "ExprIntrp": [
+    "Standard",
+    "TCollection"
+  ],
+  "Extrema": [
+    "Standard",
+    "gp",
+    "Adaptor2d",
+    "GeomAbs",
+    "TColStd",
+    "math",
+    "Adaptor3d"
+  ],
+  "FEmTool": [
+    "Standard",
+    "math",
+    "TColStd"
+  ],
+  "FairCurve": [
+    "Standard",
+    "math",
+    "gp"
+  ],
+  "FilletSurf": [
+    "TopTools",
+    "Standard",
+    "ChFiDS",
+    "math",
+    "TopAbs"
+  ],
+  "GC": [],
+  "GCE2d": [],
+  "GCPnts": [
+    "Adaptor3d",
+    "Standard",
+    "Adaptor2d",
+    "GeomAbs",
+    "gp"
+  ],
+  "GProp": [
+    "Standard",
+    "gp",
+    "TColgp",
+    "TColStd"
+  ],
+  "GccAna": [
+    "Standard",
+    "GccEnt",
+    "gp"
+  ],
+  "GccEnt": [
+    "Standard"
+  ],
+  "GccInt": [],
+  "GccIter": [
+    "Standard"
+  ],
+  "Geom": [
+    "gp",
+    "Standard",
+    "TColStd",
+    "TColgp",
+    "GeomAbs"
+  ],
+  "Geom2d": [
+    "gp",
+    "Standard",
+    "TColgp",
+    "TColStd"
+  ],
+  "Geom2dAPI": [
+    "gp",
+    "Quantity",
+    "Standard",
+    "TColgp",
+    "GeomAbs",
+    "TColStd",
+    "Approx"
+  ],
+  "Geom2dAdaptor": [
+    "Standard",
+    "GeomAbs",
+    "TColStd",
+    "gp"
+  ],
+  "Geom2dConvert": [
+    "Standard",
+    "TColGeom2d",
+    "TColStd"
+  ],
+  "Geom2dGcc": [
+    "Geom2dAdaptor",
+    "Standard",
+    "gp",
+    "Adaptor3d",
+    "GccEnt",
+    "GccAna",
+    "math"
+  ],
+  "Geom2dHatch": [
+    "Standard",
+    "HatchGen",
+    "Geom2dAdaptor",
+    "gp",
+    "TopAbs"
+  ],
+  "Geom2dInt": [
+    "Extrema",
+    "Standard",
+    "Adaptor2d",
+    "gp",
+    "TColStd",
+    "math",
+    "IntCurve",
+    "IntRes2d",
+    "Bnd"
+  ],
+  "Geom2dLProp": [
+    "Standard",
+    "gp",
+    "LProp"
+  ],
+  "GeomAPI": [
+    "Quantity",
+    "Standard",
+    "gp",
+    "Extrema",
+    "TColgp",
+    "GeomAbs",
+    "Approx",
+    "TColStd"
+  ],
+  "GeomAdaptor": [
+    "Standard",
+    "GeomAbs",
+    "TColStd",
+    "gp"
+  ],
+  "GeomConvert": [
+    "Standard",
+    "TColGeom",
+    "TColStd"
+  ],
+  "GeomFill": [
+    "Standard",
+    "TColgp",
+    "TColStd",
+    "GeomAbs",
+    "math",
+    "gp",
+    "Approx",
+    "TColGeom"
+  ],
+  "GeomInt": [
+    "TopAbs",
+    "Standard",
+    "TColgp",
+    "math",
+    "TColStd",
+    "AppParCurves",
+    "Approx",
+    "gp",
+    "IntImp",
+    "IntSurf"
+  ],
+  "GeomLProp": [
+    "Standard",
+    "gp"
+  ],
+  "GeomLib": [
+    "Standard",
+    "gp"
+  ],
+  "GeomTools": [
+    "Standard"
+  ],
+  "GraphDS": [
+    "Standard"
+  ],
+  "GraphTools": [
+    "Standard",
+    "TColStd"
+  ],
+  "HLRAlgo": [
+    "TopAbs",
+    "Standard",
+    "gp"
+  ],
+  "HLRAppli": [
+    "Standard"
+  ],
+  "HLRBRep": [
+    "Standard",
+    "TColStd",
+    "gp",
+    "TopoDS",
+    "GeomAbs",
+    "TColgp",
+    "BRepAdaptor",
+    "IntCurve",
+    "IntRes2d",
+    "Bnd",
+    "math",
+    "Intf",
+    "IntAna",
+    "HLRAlgo",
+    "BRepTopAdaptor",
+    "TopAbs",
+    "Extrema",
+    "TopTools"
+  ],
+  "HLRTopoBRep": [
+    "Standard",
+    "TopoDS",
+    "HLRAlgo",
+    "BRepTopAdaptor",
+    "Contap",
+    "gp"
+  ],
+  "HatchGen": [
+    "Standard",
+    "TopAbs"
+  ],
+  "IFSelect": [
+    "TCollection",
+    "Standard",
+    "Interface",
+    "IFGraph",
+    "TColStd"
+  ],
+  "IGESCAFControl": [
+    "TCollection",
+    "Standard",
+    "TDF",
+    "TopoDS",
+    "XCAFPrs",
+    "TopTools"
+  ],
+  "IGESControl": [
+    "Standard",
+    "IFSelect",
+    "TopoDS"
+  ],
+  "IntAna": [
+    "gp",
+    "Standard"
+  ],
+  "IntAna2d": [
+    "Standard",
+    "gp"
+  ],
+  "IntCurve": [
+    "Standard",
+    "gp",
+    "IntRes2d",
+    "TColStd"
+  ],
+  "IntCurveSurface": [
+    "GeomAbs",
+    "TColStd",
+    "Standard",
+    "gp",
+    "Intf",
+    "Bnd",
+    "math",
+    "IntAna",
+    "TColgp"
+  ],
+  "IntCurvesFace": [
+    "TopoDS",
+    "Standard",
+    "gp",
+    "IntCurveSurface"
+  ],
+  "IntPatch": [
+    "Standard",
+    "gp",
+    "IntSurf",
+    "GeomAbs",
+    "TColStd",
+    "math",
+    "IntImp",
+    "IntWalk"
+  ],
+  "IntPolyh": [
+    "Standard",
+    "Bnd",
+    "TColStd"
+  ],
+  "IntRes2d": [
+    "Standard",
+    "gp"
+  ],
+  "IntStart": [
+    "gp",
+    "Standard"
+  ],
+  "IntSurf": [
+    "gp",
+    "Standard"
+  ],
+  "IntTools": [
+    "Standard",
+    "TopAbs",
+    "TopoDS",
+    "gp",
+    "IntSurf",
+    "Bnd",
+    "BRepAdaptor"
+  ],
+  "Interface": [
+    "Standard",
+    "Message",
+    "MoniTool",
+    "TCollection"
+  ],
+  "Intf": [
+    "Standard",
+    "gp",
+    "Bnd"
+  ],
+  "Intrv": [
+    "Standard"
+  ],
+  "LProp": [
+    "Standard",
+    "GeomAbs"
+  ],
+  "LProp3d": [
+    "Standard",
+    "gp"
+  ],
+  "Law": [
+    "GeomAbs",
+    "TColStd",
+    "Standard",
+    "TColgp"
+  ],
+  "LocOpe": [
+    "TopoDS",
+    "Standard",
+    "TopTools",
+    "gp",
+    "TopAbs",
+    "TColGeom",
+    "TColgp"
+  ],
+  "LocalAnalysis": [
+    "GeomLProp",
+    "GeomAbs"
+  ],
+  "MAT": [
+    "Standard"
+  ],
+  "MAT2d": [
+    "MAT",
+    "Standard",
+    "gp",
+    "Bisector",
+    "TColGeom2d",
+    "TColStd"
+  ],
+  "MMgt": [],
+  "Materials": [
+    "Standard",
+    "Quantity",
+    "TCollection"
+  ],
+  "NLPlate": [
+    "Standard",
+    "gp",
+    "Plate"
+  ],
+  "PLib": [
+    "Standard",
+    "TColStd"
+  ],
+  "Plugin": [
+    "Standard",
+    "TCollection",
+    "OSD"
+  ],
+  "Poly": [
+    "Standard",
+    "gp"
+  ],
+  "ProjLib": [
+    "Standard",
+    "gp",
+    "GeomAbs",
+    "TColStd",
+    "math"
+  ],
+  "Prs3d": [
+    "TColStd",
+    "Quantity",
+    "Standard",
+    "Aspect",
+    "Graphic3d",
+    "TopLoc",
+    "TCollection",
+    "gp"
+  ],
+  "PrsMgr": [
+    "Graphic3d",
+    "gp",
+    "Standard",
+    "TColStd",
+    "TopLoc",
+    "Quantity"
+  ],
+  "Quantity": [
+    "Standard",
+    "TCollection"
+  ],
+  "Resource": [
+    "Standard",
+    "TCollection",
+    "TColStd"
+  ],
+  "STEPCAFControl": [
+    "IFSelect",
+    "Standard",
+    "TDF",
+    "TCollection",
+    "TopoDS",
+    "STEPControl",
+    "STEPConstruct",
+    "XCAFDoc",
+    "TopTools"
+  ],
+  "STEPControl": [
+    "Standard",
+    "TopoDS",
+    "TColStd",
+    "gp",
+    "TopTools"
+  ],
+  "SelectBasics": [
+    "Standard",
+    "TColgp",
+    "Bnd",
+    "TopLoc",
+    "gp"
+  ],
+  "SelectMgr": [
+    "Standard",
+    "Quantity",
+    "TopLoc",
+    "TopAbs",
+    "Bnd",
+    "TColgp",
+    "TColStd"
+  ],
+  "ShapeAlgo": [],
+  "ShapeAnalysis": [
+    "TopoDS",
+    "Standard",
+    "TopLoc",
+    "gp",
+    "IntRes2d",
+    "TColgp",
+    "TColStd",
+    "TopTools",
+    "ShapeExtend",
+    "Adaptor3d",
+    "Bnd",
+    "TopAbs"
+  ],
+  "ShapeBuild": [
+    "TopoDS",
+    "Standard",
+    "TopLoc",
+    "gp",
+    "TopAbs",
+    "ShapeExtend"
+  ],
+  "ShapeConstruct": [
+    "TColgp",
+    "TColStd",
+    "TopoDS",
+    "gp",
+    "Standard",
+    "ShapeExtend",
+    "GeomAbs"
+  ],
+  "ShapeCustom": [
+    "Standard",
+    "TopoDS",
+    "TopLoc",
+    "gp",
+    "TColgp"
+  ],
+  "ShapeExtend": [
+    "Standard",
+    "gp",
+    "TopoDS",
+    "Message",
+    "TopTools",
+    "TopAbs",
+    "TColStd"
+  ],
+  "ShapeFix": [
+    "Standard",
+    "TopoDS",
+    "Message",
+    "TopTools",
+    "ShapeExtend",
+    "Bnd",
+    "ShapeAnalysis",
+    "TopLoc",
+    "TopAbs",
+    "gp",
+    "TColStd"
+  ],
+  "ShapeProcess": [
+    "Standard",
+    "TCollection",
+    "TopoDS",
+    "TopAbs",
+    "TopTools",
+    "BRepTools",
+    "Message",
+    "GeomAbs"
+  ],
+  "ShapeProcessAPI": [
+    "TopoDS",
+    "Standard",
+    "TopAbs"
+  ],
+  "ShapeUpgrade": [
+    "Standard",
+    "ShapeExtend",
+    "TopoDS",
+    "TopLoc",
+    "TopAbs",
+    "GeomAbs",
+    "TopTools"
+  ],
+  "SortTools": [
+    "TColStd",
+    "TCollection"
+  ],
+  "Standard": [],
+  "StdFail": [
+    "Standard"
+  ],
+  "StdPrs": [
+    "TopoDS",
+    "TopLoc",
+    "Poly",
+    "TColgp",
+    "Adaptor3d",
+    "Quantity",
+    "Standard",
+    "Prs3d",
+    "BRepAdaptor",
+    "gp"
+  ],
+  "StdSelect": [
+    "Standard",
+    "TopAbs",
+    "TopoDS",
+    "Quantity",
+    "TopLoc",
+    "Select3D",
+    "TColgp",
+    "Graphic3d",
+    "gp"
+  ],
+  "StlAPI": [
+    "Standard",
+    "TopoDS"
+  ],
+  "StlMesh": [
+    "Standard",
+    "gp"
+  ],
+  "Sweep": [
+    "Standard",
+    "TopAbs"
+  ],
+  "TColGeom": [
+    "Standard"
+  ],
+  "TColGeom2d": [
+    "Standard"
+  ],
+  "TColQuantity": [
+    "Quantity",
+    "Standard"
+  ],
+  "TColStd": [
+    "TCollection",
+    "Standard"
+  ],
+  "TColgp": [
+    "gp",
+    "Standard"
+  ],
+  "TCollection": [
+    "Standard"
+  ],
+  "TDF": [
+    "Standard",
+    "TCollection",
+    "TColStd"
+  ],
+  "TDataStd": [
+    "TCollection",
+    "TDF",
+    "Standard",
+    "TColStd"
+  ],
+  "TDocStd": [
+    "TDF",
+    "Standard",
+    "TCollection",
+    "TColStd"
+  ],
+  "TFunction": [
+    "Standard",
+    "TDF"
+  ],
+  "TShort": [
+    "Standard"
+  ],
+  "TopBas": [
+    "Standard",
+    "TopAbs"
+  ],
+  "TopClass": [
+    "gp",
+    "Standard",
+    "TopoDS"
+  ],
+  "TopCnx": [
+    "gp",
+    "Standard",
+    "TopAbs"
+  ],
+  "TopExp": [
+    "TopoDS",
+    "TopAbs"
+  ],
+  "TopLoc": [
+    "Standard"
+  ],
+  "TopOpeBRep": [
+    "Standard",
+    "IntSurf",
+    "TopAbs",
+    "IntPatch",
+    "TopoDS",
+    "BRepAdaptor",
+    "TCollection",
+    "Bnd",
+    "TColStd",
+    "TopOpeBRepTool",
+    "IntRes2d",
+    "TopOpeBRepDS",
+    "gp",
+    "TopTools"
+  ],
+  "TopOpeBRepBuild": [
+    "TopTools",
+    "TopoDS",
+    "gp",
+    "Bnd",
+    "Standard",
+    "TopAbs",
+    "TCollection",
+    "TopOpeBRepDS",
+    "TopOpeBRepTool"
+  ],
+  "TopOpeBRepTool": [
+    "Standard",
+    "TopoDS",
+    "Bnd",
+    "TopTools",
+    "gp",
+    "TopAbs",
+    "TColStd",
+    "BRepClass3d",
+    "BRepAdaptor",
+    "TColgp"
+  ],
+  "TopTools": [
+    "TopoDS",
+    "Standard",
+    "TopLoc",
+    "TCollection",
+    "TopAbs",
+    "TColStd"
+  ],
+  "TopTrans": [
+    "TopAbs",
+    "Standard",
+    "gp"
+  ],
+  "Visual3d": [
+    "Standard",
+    "Aspect",
+    "TColStd",
+    "Quantity",
+    "TCollection",
+    "Font",
+    "Graphic3d",
+    "Image"
+  ],
+  "XCAFApp": [
+    "TColStd"
+  ],
+  "XCAFDoc": [
+    "TDF",
+    "Standard",
+    "TopoDS",
+    "TopLoc",
+    "TColStd",
+    "TopTools",
+    "Quantity",
+    "TCollection",
+    "gp"
+  ],
+  "XCAFPrs": [
+    "Quantity",
+    "Standard",
+    "TopoDS",
+    "TDF",
+    "Graphic3d"
+  ],
+  "XSControl": [
+    "Standard",
+    "TopoDS",
+    "Interface",
+    "TCollection",
+    "TopAbs",
+    "IFSelect"
+  ],
+  "gce": [],
+  "gp": [
+    "Standard",
+    "TColStd"
+  ],
+  "math": [
+    "Standard"
+  ]
+}

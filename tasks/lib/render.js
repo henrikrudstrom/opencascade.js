@@ -1,15 +1,16 @@
-var fs = require("fs");
-var mkdirp = require('mkdirp');
-var path = require('path');
-//var data = JSON.parse(fs.readFileSync("config/gp_proc.json"))
+'use-strict';
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const path = require('path');
 
-var loadConfig = require("./config.js")
-var loadTree = require("./tree.js")
+const common = require("./common.js");
+const loadConfig = require('./config.js');
+const loadTree = require('./tree.js');
 
 function ignoreClass(config) {
   return function(obj) {
-    return !config.ignore(obj.name)
-  }
+    return !config.ignore(obj.name);
+  };
 }
 
 function ignoreMember(cls, config) {
@@ -26,38 +27,38 @@ function isClass(name) {
 
 
 function renderArg(arg) {
-  res = arg.decl + " " + arg.name
+  var res = arg.decl + ' ' + arg.name;
   if (arg.default) {
-    res += "=" + arg.default
+    res += '=' + arg.default;
   }
   return res;
 }
 
 function renderFunction(func) {
-  var args = func.arguments.map(renderArg).join(", ");
+  var args = func.arguments.map(renderArg).join(', ');
 
-  var stat = func.static ? "static " : ""
-  var cons = func.const ? " const" : ""
+  var stat = func.static ? 'static ' : '';
+  var cons = func.const ? ' const' : '';
 
   return `
     %feature("compactdefaultargs") ${func.name};
-    ${stat}${func.returnType + " "}${func.name}${cons}(${args});`
+    ${stat}${func.returnType + ' '}${func.name}(${args})${cons};`;
 }
 
 function renderClass(cls, config) {
   var functions = cls.members
-    .filter(isClass("calldef"))
+    .filter(isClass('calldef'))
     .filter(ignoreMember(cls, config))
-    .map(renderFunction).join("");
-  var base = ""
+    .map(renderFunction).join('');
+  var base = '';
   if (cls.bases.length > 0) {
-    base = " : " + cls.bases[0].access + " " + cls.bases[0].name;
+    base = ' : ' + cls.bases[0].access + ' ' + cls.bases[0].name;
   }
-  var constructors = cls.constructors
+  const constructors = cls.constructors
     .filter(ignoreMember(cls, config))
-    .map(renderFunction).join("");
+    .map(renderFunction).join('');
   return `\
-%nodefaultctor <#name>;
+%nodefaultctor ${cls.name};
 class ${cls.name}${base} {
 	public:
     /* Constructors */
@@ -65,24 +66,25 @@ class ${cls.name}${base} {
     /* Member functions */
     ${functions}
 };
-`
+`;
 }
 
 function renderTypedef(td) {
-
+  return `typedef ${td.type} ${td.name};`;
 }
 
 function renderEnum(en) {
   var values = en.values.map(function(v) {
     return `  ${v[0]} = ${v[1]}`;
-  }).join("\n");
-  return `enum ${en.name} {\n${values};\n}`
+  }).join(',\n');
+  return `enum ${en.name} {\n${values}\n};`;
 }
 
-module.exports = function(moduleName) {
-  var tree = loadTree(`data/tree/${moduleName}.json`);
-  var config = loadConfig(`data/config/${moduleName}.json`)
-  var basePath = `build/swig/${moduleName}`
+module.exports = function(moduleName, swigPath) {
+  var tree = loadTree(`cache/tree/${moduleName}.json`);
+  var config = loadConfig(`build/config/${moduleName}.json`);
+  var basePath = path.join(swigPath, moduleName);
+  var depends = SETTINGS.depends[moduleName];
 
   function writeFile(dest, src) {
     var fullPath = path.join(basePath, dest);
@@ -90,67 +92,67 @@ module.exports = function(moduleName) {
     fs.writeFileSync(fullPath, src);
   }
 
-  this.renderClasses = function(moduleName) {
+  this.renderClasses = function() {
     var classes = tree.classes.filter(ignoreClass(config));
 
     classes.forEach(function(cls) {
       var src = renderClass(cls, config);
-      writeFile(`/classes/${cls.name}.i`, src)
+      writeFile(`/classes/${cls.name}.i`, src);
     });
-  }
+  };
 
-  this.renderHeaders = function(moduleName) {
+  this.renderHeaders = function() {
     var src = tree.headers.map(function(header) {
       return `#include<${header}>`;
-    }).join("\n")
-    src = `%{\n${src}\n%}`
-    writeFile("headers.i", src)
-  }
+    }).join('\n');
+    src = `%{\n${src}\n%}`;
+    writeFile('headers.i', src);
+  };
 
-  this.renderRenames = function(moduleName) {
-    var renames = []
+  this.renderRenames = function() {
+    var renames = [];
     config.data.rename.forEach(function(rename) {
       var target = rename.name;
       if (rename.parent)
         target = `${rename.parent}::${target}`;
-      renames.push(`%rename(${rename.newName}) ${target};`)
+      renames.push(`%rename(${rename.newName}) ${target};`);
     });
-    var src = renames.join("\n");
-    writeFile("renames.i", src)
-  }
+    const src = renames.join('\n');
+    writeFile('renames.i', src);
+  };
 
-  this.renderModule = function(moduleName) {
-    var dependencies = tree.dependencies.map(function(dep) {
-      return `%import ../${dep}/module.i;\n%include ../${dep}/headers.i`
-    }).join("\n");
-    var custom = "";
+  this.renderModule = function() {
+    const dependencies = depends.map(function(dep) {
+      return `%import "../${dep}/module.i";\n%include ../${dep}/headers.i`;
+    }).join('\n');
+    var custom = '';
+    var typedefs, enums, classes;
     if (fs.exists(`src/swig//custom/${moduleName}.i`))
       custom = `\n%include ../custom/${moduleName}.i\n`;
 
-    var typedefs = tree.typedefs
+    typedefs = tree.typedefs
       .filter(ignoreClass(config))
       .map(renderTypedef)
-      .join("\n")
-    if (typedefs) typedefs += "\n"
+      .join('\n');
+    if (typedefs) typedefs += '\n';
 
-    var enums = tree.enums
+    enums = tree.enums
       .filter(ignoreClass(config))
       .map(renderEnum)
-      .join("\n")
-    if (enums) enums += "\n"
+      .join('\n');
+    if (enums) enums += '\n';
 
-    var classes = tree.classes
+    classes = tree.classes
       .filter(ignoreClass(config))
-      .map(function(cls) {
-        return `%include classes/${cls.name}.i`
-      })
-      .join("\n");
-    if (classes) classes += "\n"
+      .map((cls) => `%include classes/${cls.name}.i`)
+      .join('\n');
+    if (classes) classes += '\n';
 
 
-    src = `\
+    const src = `\
 // Module ${moduleName}
-%include ../common/ModuleHeader.i
+%module(package="OCC") ${moduleName}
+%include ../../user/common/ModuleHeader.i
 %include headers.i
 
 //dependencies
@@ -158,11 +160,12 @@ ${dependencies}
 
 %include renames.i
 ${custom}
-%module (package="OCC") ${moduleName}
+
+
 ${typedefs}
 ${enums}
 ${classes}
-`
-    writeFile("module.i", src)
-  }
-}
+`;
+    writeFile('module.i', src);
+  };
+};

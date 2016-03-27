@@ -4,20 +4,32 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var hashFiles = require('hash-files');
-
-var argv = require('yargs').argv;
-
-global.SETTINGS = {
-  oce_include: '/home/henrik/OCE/include/oce',
-  force: argv.force,
-  modules: JSON.parse(fs.readFileSync('config/modules.json')),
-  depends: JSON.parse(fs.readFileSync('config/depends.json'))
-};
+//
+// var argv = require('yargs').argv;
+//
+// global.SETTINGS = {
+//   oce_include: '/home/henrik/OCE/include/oce',
+//   force: argv.force,
+//   modules: JSON.parse(fs.readFileSync('config/modules.json')),
+//   depends: JSON.parse(fs.readFileSync('config/depends.json'))
+// };
 
 module.exports.match = function(exp, name) {
   var exp = new RegExp('^' + exp.replace('*', '.*') + '$');
   return exp.test(name);
 };
+function moduleTask(name, mName) {
+  if (Array.isArray(mName)) {
+    return mName.map((m) => moduleTask(name, m));
+  }
+  if (Array.isArray(name)) {
+    return name.map((n) => moduleTask(n, mName));
+  }
+  return name + ':' + mName;
+}
+
+module.exports.moduleTask = moduleTask;
+
 
 module.exports.runIfChanged = function(files, name, cb) {
   var hashPath = `tmp/hash/${name}.hash`
@@ -63,6 +75,30 @@ module.exports.runIfChanged = function(files, name, cb) {
     if (!run) {
       return cb();
     }
-    runTaskAndHash()
+    return runTaskAndHash();
   });
-}
+};
+
+module.exports.limitExecution = function(task, modules, done) {
+  function split(array, n) {
+    var spl = [];
+    for (var i = 0; i < n; i++) {
+      spl.push(array.filter((e, index) => {
+        return index % n === i;
+      }));
+    }
+
+    return spl;
+  }
+  var n = 8;
+
+  function cb(error) {
+    if (error) done(error);
+    n -= 1;
+    if (n === 0) done();
+  }
+
+  split(modules, n).forEach((mod) => {
+    runSequence.apply(this, moduleTask(task, mod).concat([cb]));
+  });
+};

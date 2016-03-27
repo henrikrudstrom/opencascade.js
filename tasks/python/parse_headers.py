@@ -13,14 +13,20 @@ from collections import OrderedDict
 import json
 
 
-with open("config/ignore_headers.json", "r") as f:
+with open("config/cannot-parse.json", "r") as f:
     ignore_list = json.loads(f.read())
 def ignore(header):
-    header = header.replace(".hxx", "")
+    header = os.path.splitext(header)[0]
     header = re.sub("<\w+>", "", header)
     header = header.replace(oce_include + "/", "")
-    ignored = header in ignore_list
-    return ignored
+    if header in ignore_list["headers"]:
+        return True
+
+    if header.split("_")[0] in ignore_list["modules"]:
+        return True
+
+
+    return False
 
 
 class Dict(OrderedDict):
@@ -33,6 +39,7 @@ class Module:
         self.output_path = output_path
         self.files = glob(oce_include + "/" + name + "_*.hxx")
         self.files = filter(lambda h: not ignore(h), self.files)
+
         self.ns = parse.parse_files(oce_include, self.files)
         #print "===================loaded"
 
@@ -61,11 +68,13 @@ def clean_name(name):
         return name[2:];
     return name
 def type(t):
-    if isinstance(t, declarations.cpptypes.declarated_t):
-        return str(t)
-    if isinstance(t, declarations.cpptypes.void_t):
-        return str(t)
-    return type(t.base)
+    # if isinstance(t, declarations.cpptypes.declarated_t):
+    #     return str(t)
+    # if isinstance(t, declarations.cpptypes.void_t):
+    #     return str(t)
+    if(hasattr(t, 'base')):
+        return type(t.base)
+    return str(t);
 
 def with_parent(parent, fn):
     def f(obj):
@@ -151,8 +160,8 @@ def w_class(cls):
         # enums=iter(cls.enums(), w_enum),
         # #typedefs=iter(cls.typedefs(), w_typedef),
         #
-        constructors=iter(cls.constructors(), with_parent(cls, w_constructor)),
-        members=iter(cls.member_functions(), with_parent(cls, w_member_function)),
+        constructors=iter(cls.constructors(allow_empty=True), with_parent(cls, w_constructor)),
+        members=iter(cls.member_functions(allow_empty=True), with_parent(cls, w_member_function)),
 
         #variables=iter(cls.variables(), w_variable)
         )
@@ -160,7 +169,7 @@ def w_class(cls):
 def w_module(ns, name):
     return Dict(
         name=name,
-        classes=map(w_class, ns.classes(s_class(name))),
+        classes=map(w_class, ns.classes(s_class(name), allow_empty=True)),
         typedefs=iter(ns.typedefs(s_typedef(name), allow_empty=True), w_typedef),
         enums=iter(ns.enums(s_enum(name), allow_empty=True), w_enum),
         headers=get_headers(name)
@@ -177,7 +186,7 @@ def wrapped_classes(module):
         if not (cls.name.startswith(module.name) or cls.name.startswith("Handle_" + module.name)):
             return False
         return True
-    classes = list(module.ns.classes(include))
+    classes = list(module.ns.classes(include, allow_empty=True))
 
     return classes
 

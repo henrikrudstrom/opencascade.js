@@ -3,9 +3,12 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
-const common = require("./common.js");
+
 const loadConfig = require('./config.js');
 const loadTree = require('./tree.js');
+const settings = require('./settings.js');
+const paths = settings.paths;
+
 
 function ignoreClass(config) {
   return function(obj) {
@@ -81,10 +84,10 @@ function renderEnum(en) {
 }
 
 module.exports = function(moduleName, swigPath) {
-  var tree = loadTree(`cache/tree/${moduleName}.json`);
+  var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
   var config = loadConfig(`build/config/${moduleName}.json`);
   var basePath = path.join(swigPath, moduleName);
-  var depends = SETTINGS.depends[moduleName];
+  var depends = settings.depends[moduleName];
 
   function writeFile(dest, src) {
     var fullPath = path.join(basePath, dest);
@@ -127,8 +130,8 @@ module.exports = function(moduleName, swigPath) {
     }).join('\n');
     var custom = '';
     var typedefs, enums, classes;
-    if (fs.exists(`src/swig//custom/${moduleName}.i`))
-      custom = `\n%include ../custom/${moduleName}.i\n`;
+    if (fs.exists(`${paths.userSwigDest}/${moduleName}.i`))
+      custom = `\n%include ../user/${moduleName}.i\n`;
 
     typedefs = tree.typedefs
       .filter(ignoreClass(config))

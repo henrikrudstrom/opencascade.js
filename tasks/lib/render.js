@@ -42,11 +42,11 @@ function renderFunction(func) {
   var args = func.arguments.map(renderArg).join(', ');
 
   var stat = func.static ? 'static ' : '';
-  var cons = func.const ? ' const' : '';
-
+  var cons = func.const ? 'const ' : '';
+  var ret = func.returnType
   return `
     %feature("compactdefaultargs") ${func.name};
-    ${stat}${func.returnType + ' '}${func.name}(${args})${cons};`;
+    ${stat}${cons}${func.returnType + ' '}${func.name}(${args});`;
 }
 
 function renderClass(cls, config) {
@@ -137,21 +137,27 @@ module.exports = function(moduleName, swigPath) {
       .filter((cls) => cls.name.startsWith(prefix))
       .map((cls) => rename(cls.name.replace(prefix, ''), cls.name));
 
-
-    //      var camelCaseRenames = [];
     var camelCaseRenames = tree.classes
       .filter(ignoreClass(config))
       .map((cls) => cls.members.filter(ignoreMember(cls, config)))
       .reduce((a, b) => a.concat(b))
-      .map((mem) => rename(camelCase(mem.name), mem.name));
+      .map((mem) => mem.name)
+      .filter((mem, index, array) => array.indexOf(mem) === index)
+      .map((name) => rename(camelCase(name), `${name}`));
     const src = classRenames.concat(camelCaseRenames).join('\n');
     writeFile('defaultRenames.i', src);
   };
 
   this.renderModule = function() {
-    const dependencies = depends.map(function(dep) {
-      return `%import "../${dep}/module.i";\n%include ../${dep}/headers.i`;
+    const dependantModules = depends.map(function(dep) {
+      return `%import "build/swig/gen/${dep}/module.i";`;
     }).join('\n');
+    const dependantHeaders = depends.map(function(dep) {
+      return `%include build/swig/gen/${dep}/headers.i`;
+    }).join('\n');
+
+
+
     var custom = '';
     var typedefs, enums, classes;
     if (fs.exists(`${paths.userSwigDest}/${moduleName}.i`))
@@ -178,12 +184,15 @@ module.exports = function(moduleName, swigPath) {
 
     const src = `\
 // Module ${moduleName}
+//dependencies
+${dependantModules}
+${dependantHeaders}
+
 %module(package="OCC") ${moduleName}
 %include ../../user/common/ModuleHeader.i
 %include headers.i
 
-//dependencies
-${dependencies}
+
 
 %include defaultRenames.i
 %include renames.i

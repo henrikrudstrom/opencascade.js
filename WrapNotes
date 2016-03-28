@@ -1,4 +1,4 @@
-
+Standard_Boolean IsNull() const; TODO: const at the end...
 
 Wrap
 * gp

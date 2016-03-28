@@ -93,7 +93,7 @@ def include_member(member):
 def w_arg(arg):
     tp = str(arg.type)
     if("const" in tp):
-        tp = "const " + tp.replace("const ", "")
+        tp = "const " + tp.replace(" const", "") #consts are on the wrong side for some reason
     d = Dict(name=arg.name, type=clean_name(type(arg.type)), decl=tp)
     add_if(d, arg.default_value, "default")
     return d

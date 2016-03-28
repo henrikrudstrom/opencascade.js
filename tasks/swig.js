@@ -84,7 +84,7 @@ settings.modules.forEach(function(moduleName) {
   gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
     run(`rm -f ${configPath}`).exec(function(error) {
       if (error) return done(error);
-      const moduleConfPath = `src/wrap/modules/${moduleName}.js`;
+      const moduleConfPath = `src/config/modules/${moduleName}.js`;
       if (!fs.existsSync(moduleConfPath)) {
         return done();
       }

@@ -1,5 +1,6 @@
 require('../common.js');
 var conf = require('../conf.js');
+const camelCase = require('camel-case');
 
 conf.ignore('*gp_VectorWithNullMagnitude');
 
@@ -49,5 +50,5 @@ const trsfs = ['Mirror', 'Rotate', 'Scale', 'Transform', 'Translate'];
 trsfs.forEach((trsf) => {
   var self = trsf.replace(/e$/, '') + 'ed';
   conf.ignore(trsf);
-  conf.rename(self, trsf)
+  conf.rename(self, camelCase(trsf));
 });

@@ -1,4 +1,3 @@
-
-var conf = require('./conf.js');
-
-conf.ignore('_*');
+module.exports = function(moduleName, conf, tree) {
+  conf.ignore('_*');
+};

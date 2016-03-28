@@ -11,7 +11,7 @@ const gutil = require('gulp-util');
 const lock = require('gulp-lock');
 
 const loadConfig = require('./lib/config.js');
-const configure = require('./lib/configure.js');
+
 const loadTree = require('./lib/tree.js');
 const Renderer = require('./lib/render.js');
 const settings = require('./lib/settings.js');
@@ -84,16 +84,19 @@ settings.modules.forEach(function(moduleName) {
   gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
     run(`rm -f ${configPath}`).exec(function(error) {
       if (error) return done(error);
-      const moduleConfPath = `src/config/modules/${moduleName}.js`;
-      if (!fs.existsSync(moduleConfPath)) {
-        return done();
-      }
+      // const moduleConfPath = `src/config/modules/${moduleName}.js`;
+      // if (!fs.existsSync(moduleConfPath)) {
+      //   return done();
+      // }
+      // const director = new (require('../src/director.js'))(moduleName);
+      // var data = director.configure();
       // const config = loadConfig(configPath);
       // const tree = loadTree(treePath);
 
+      var configure = require('../src/configure.js');
+      data = configure(moduleName);
 
 
-      var data = configure(moduleConfPath, treePath);
 
       mkdirp.sync('build/config/');
       const src = JSON.stringify(data, null, 2);
@@ -106,12 +109,26 @@ settings.modules.forEach(function(moduleName) {
 
     run(`rm -rf ${paths.swigDest}/${moduleName}`).exec(function(error) {
       if (error) return done(error);
-      var r = new Renderer(moduleName, paths.swigDest);
-      r.renderClasses();
-      r.renderRenames();
-      r.renderHeaders();
-      r.renderModule();
-      r.renderDefaultRenames();
+      // var r = new Renderer(moduleName, paths.swigDest);
+      // var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
+      // var config = loadConfig(`build/config/${moduleName}.json`);
+      // //r.renderClasses();
+      //
+      // //r.renderRenames();
+      // //r.renderHeaders();
+      // r.renderModule();
+      //r.renderDefaultRenames();
+      const render = require('../src/render.js');
+      render(moduleName);
+
+
+
+      // const director = new (require('../src/director.js'))(moduleName);
+      // fs.writeFileSync(`${paths.swigDest}/${moduleName}/renames.i`, director.renderSwig("rename"));
+      // fs.writeFileSync(`${paths.swigDest}/${moduleName}/camelCase.i`, director.renderSwig("camelCase"));
+      // fs.writeFileSync(`${paths.swigDest}/${moduleName}/noPrefix.i`, director.renderSwig("noPrefix"));
+      // fs.writeFileSync(`${paths.swigDest}/${moduleName}/headers.i`, director.renderSwig("headers"));
+
       done();
     });
   }

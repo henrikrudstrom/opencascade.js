@@ -105,48 +105,48 @@ module.exports = function(moduleName, swigPath) {
       });
   };
 
-  this.renderHeaders = function() {
-    var src = tree.headers.map(function(header) {
-      // TODO: filter includes
-      return `#include<${header}>`;
-    }).join('\n');
-    src = `%{\n${src}\n%}`;
-    writeFile('headers.i', src);
-  };
+  // this.renderHeaders = function() {
+  //   var src = tree.headers.map(function(header) {
+  //     // TODO: filter includes
+  //     return `#include<${header}>`;
+  //   }).join('\n');
+  //   src = `%{\n${src}\n%}`;
+  //   writeFile('headers.i', src);
+  // };
 
-  this.renderRenames = function() {
-    var renames = [];
-    config.data.rename.forEach(function(rename) {
-      var target = rename.name;
-      if (rename.parent)
-        target = `${rename.parent}::${target}`;
-      renames.push(`%rename(${rename.newName}) ${target};`);
-    });
-    const src = renames.join('\n');
-    writeFile('renames.i', src);
-  };
+  // this.renderRenames = function() {
+  //   var renames = [];
+  //   config.data.rename.forEach(function(rename) {
+  //     var target = rename.name;
+  //     if (rename.parent)
+  //       target = `${rename.parent}::${target}`;
+  //     renames.push(`%rename(${rename.newName}) ${target};`);
+  //   });
+  //   const src = renames.join('\n');
+  //   writeFile('renames.i', src);
+  // };
+  //
+  // function rename(name, target) {
+  //   return `%rename("${name}") ${target};`;
+  // }
 
-  function rename(name, target) {
-    return `%rename("${name}") ${target};`;
-  }
-
-  this.renderDefaultRenames = function() {
-    var prefix = `${moduleName}_`;
-    var classRenames = tree.classes
-      .filter(ignoreClass(config))
-      .filter((cls) => cls.name.startsWith(prefix))
-      .map((cls) => rename(cls.name.replace(prefix, ''), cls.name));
-
-    var camelCaseRenames = tree.classes
-      .filter(ignoreClass(config))
-      .map((cls) => cls.members.filter(ignoreMember(cls, config)))
-      .reduce((a, b) => a.concat(b))
-      .map((mem) => mem.name)
-      .filter((mem, index, array) => array.indexOf(mem) === index)
-      .map((name) => rename(camelCase(name), `${name}`));
-    const src = classRenames.concat(camelCaseRenames).join('\n');
-    writeFile('defaultRenames.i', src);
-  };
+  // this.renderDefaultRenames = function() {
+  //   var prefix = `${moduleName}_`;
+  //   var classRenames = tree.classes
+  //     .filter(ignoreClass(config))
+  //     .filter((cls) => cls.name.startsWith(prefix))
+  //     .map((cls) => rename(cls.name.replace(prefix, ''), cls.name));
+  //
+  //   var camelCaseRenames = tree.classes
+  //     .filter(ignoreClass(config))
+  //     .map((cls) => cls.members.filter(ignoreMember(cls, config)))
+  //     .reduce((a, b) => a.concat(b))
+  //     .map((mem) => mem.name)
+  //     .filter((mem, index, array) => array.indexOf(mem) === index)
+  //     .map((name) => rename(camelCase(name), `${name}`));
+  //   const src = classRenames.concat(camelCaseRenames).join('\n');
+  //   writeFile('defaultRenames.i', src);
+  // };
 
   this.renderModule = function() {
     const dependantModules = depends.map(function(dep) {

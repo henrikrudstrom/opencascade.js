@@ -1,23 +1,14 @@
-module.exports.configure = function(list) {
-  return function(name, parent, newName) {
-    if (!newName)
-      return list.push({ name, newName: parent });
-    return list.push({ name, parent, newName });
-  };
+module.exports.configure = function(name, parent, newName) {
+  if (newName === undefined)
+    return { name, newName: parent };
+  return { name, parent, newName };
 };
-module.exports.renderSwig = function() {
-  var renames = [];
-  config.data.rename.forEach(function(rename) {
-    var target = rename.name;
-    if (rename.parent)
-      target = `${rename.parent}::${target}`;
-    renames.push(`%rename(${rename.newName}) ${target};`);
+module.exports.renderSwig = function(moduleName, config) {
+  var renames = config.rename.map(function(obj) {
+    var target = obj.name;
+    if (obj.parent)
+      target = `${obj.parent}::${target}`;
+    return `%rename("${obj.newName}") ${target};`;
   });
-  const src = renames.join('\n');
-  writeFile('renames.i', src);
-};
-
-function rename(name, target) {
-  return `%rename("${name}") ${target};`;
-}
+  return renames.join('\n');
 };

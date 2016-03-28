@@ -1,6 +1,7 @@
 'use-strict';
 const fs = require('fs');
 const common = require('./common.js');
+const match = common.match;
 
 module.exports = function(path) {
   var data = { ignore: [], rename: [] };
@@ -58,11 +59,12 @@ module.exports = function(path) {
     ignore: function(cls, member) {
       return data.ignore.some(function(ign) {
         if (member) {
-          if (!ign.parent) return false;
-          if (cls !== ign.parent) return false;
-          return member === ign.name;
+          if (ign.parent && cls !== ign.parent) return false;
+          return match(ign.name, member); // === ign.name;
         }
-        return cls === ign.name;
+        if(cls.startsWith("gp_Vector"))
+          console.log("IGNORE", cls, ign.name)
+        return match(ign.name, cls);
       });
     },
     data: data,

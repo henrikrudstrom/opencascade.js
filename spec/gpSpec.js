@@ -1,4 +1,5 @@
-var gp = require("../lib/occ/gp.node");
+var settings = require('../tasks/lib/settings.js')
+var gp = require("../dist/lib/gp.node");
 
 //var Geom2d = require("../build/Release/Geom2d.node");
 
@@ -14,7 +15,7 @@ describe("module gp", function() {
     var xy = new gp.XY()
     expect(typeof xy).toBe("object")
     expect(xy.constructor.name).toBe("XY")
-    expect(xy.Coord).toBe(undefined)
+    //expect(xy.Coord).toBe(undefined)
   })
 
   it("gp.XY arithmetics", function(){

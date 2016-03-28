@@ -67,6 +67,7 @@ def clean_name(name):
     if name.startswith("::"):
         return name[2:];
     return name
+
 def type(t):
     # if isinstance(t, declarations.cpptypes.declarated_t):
     #     return str(t)
@@ -81,7 +82,13 @@ def with_parent(parent, fn):
         return fn(obj, parent)
     return f
 
-
+def include_member(member):
+    if(member.access_type != "public"):
+        return False;
+    if(isinstance(member, declarations.constructor_t)):
+        if member.parent.is_abstract:
+            return False
+    return True;
 
 def w_arg(arg):
     tp = str(arg.type)
@@ -160,8 +167,8 @@ def w_class(cls):
         # enums=iter(cls.enums(), w_enum),
         # #typedefs=iter(cls.typedefs(), w_typedef),
         #
-        constructors=iter(cls.constructors(allow_empty=True), with_parent(cls, w_constructor)),
-        members=iter(cls.member_functions(allow_empty=True), with_parent(cls, w_member_function)),
+        constructors=iter(cls.constructors(include_member, allow_empty=True), with_parent(cls, w_constructor)),
+        members=iter(cls.member_functions(include_member, allow_empty=True), with_parent(cls, w_member_function)),
 
         #variables=iter(cls.variables(), w_variable)
         )

@@ -8,6 +8,7 @@ const loadConfig = require('./config.js');
 const loadTree = require('./tree.js');
 const settings = require('./settings.js');
 const paths = settings.paths;
+const camelCase = require('camel-case');
 
 
 function ignoreClass(config) {
@@ -96,16 +97,17 @@ module.exports = function(moduleName, swigPath) {
   }
 
   this.renderClasses = function() {
-    var classes = tree.classes.filter(ignoreClass(config));
-
-    classes.forEach(function(cls) {
-      var src = renderClass(cls, config);
-      writeFile(`/classes/${cls.name}.i`, src);
-    });
+    tree.classes
+      .filter(ignoreClass(config))
+      .forEach(function(cls) {
+        var src = renderClass(cls, config);
+        writeFile(`/classes/${cls.name}.i`, src);
+      });
   };
 
   this.renderHeaders = function() {
     var src = tree.headers.map(function(header) {
+      // TODO: filter includes
       return `#include<${header}>`;
     }).join('\n');
     src = `%{\n${src}\n%}`;
@@ -122,6 +124,28 @@ module.exports = function(moduleName, swigPath) {
     });
     const src = renames.join('\n');
     writeFile('renames.i', src);
+  };
+
+  function rename(name, target) {
+    return `%rename("${name}") ${target};`;
+  }
+
+  this.renderDefaultRenames = function() {
+    var prefix = `${moduleName}_`;
+    var classRenames = tree.classes
+      .filter(ignoreClass(config))
+      .filter((cls) => cls.name.startsWith(prefix))
+      .map((cls) => rename(cls.name.replace(prefix, ''), cls.name));
+
+
+    //      var camelCaseRenames = [];
+    var camelCaseRenames = tree.classes
+      .filter(ignoreClass(config))
+      .map((cls) => cls.members.filter(ignoreMember(cls, config)))
+      .reduce((a, b) => a.concat(b))
+      .map((mem) => rename(camelCase(mem.name), mem.name));
+    const src = classRenames.concat(camelCaseRenames).join('\n');
+    writeFile('defaultRenames.i', src);
   };
 
   this.renderModule = function() {
@@ -161,6 +185,7 @@ module.exports = function(moduleName, swigPath) {
 //dependencies
 ${dependencies}
 
+%include defaultRenames.i
 %include renames.i
 ${custom}
 

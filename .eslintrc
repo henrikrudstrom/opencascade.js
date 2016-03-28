@@ -11,7 +11,7 @@
     "beforeEach": true,
     "afterEach": true,
     "Array.args": true,
-    "SETTINGS": true,
+    "$$": true,
   },
   "rules": {
     "no-var": 0,

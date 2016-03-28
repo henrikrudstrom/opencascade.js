@@ -11,6 +11,7 @@ const gutil = require('gulp-util');
 const lock = require('gulp-lock');
 
 const loadConfig = require('./lib/config.js');
+const configure = require('./lib/configure.js');
 const loadTree = require('./lib/tree.js');
 const Renderer = require('./lib/render.js');
 const settings = require('./lib/settings.js');
@@ -80,40 +81,48 @@ settings.modules.forEach(function(moduleName) {
     return runSequence(mTask('parse-headers'), /*mTask('parse-depends'),*/ done);
   });
 
-  gulp.task(mTask('configure-wrapper'), [mTask('parse')], function(done) {
+  gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
     run(`rm -f ${configPath}`).exec(function(error) {
       if (error) return done(error);
-      const config = loadConfig(configPath);
-      const tree = loadTree(treePath);
       const moduleConfPath = `src/wrap/modules/${moduleName}.js`;
-
-      if (fs.existsSync(moduleConfPath)) {
-        config.configure(require(`../${moduleConfPath}`), tree);
+      if (!fs.existsSync(moduleConfPath)) {
+        return done();
       }
+      // const config = loadConfig(configPath);
+      // const tree = loadTree(treePath);
+
+
+
+      var data = configure(moduleConfPath, treePath);
 
       mkdirp.sync('build/config/');
-      const src = JSON.stringify(config.data, null, 2);
+      const src = JSON.stringify(data, null, 2);
       return fs.writeFile(configPath, src, done);
     });
   });
 
 
   function renderSwig(done) {
-    var r = new Renderer(moduleName, paths.swigDest);
-    r.renderClasses();
-    r.renderRenames();
-    r.renderHeaders();
-    r.renderModule();
-    done();
+
+    run(`rm -rf ${paths.swigDest}/${moduleName}`).exec(function(error) {
+      if (error) return done(error);
+      var r = new Renderer(moduleName, paths.swigDest);
+      r.renderClasses();
+      r.renderRenames();
+      r.renderHeaders();
+      r.renderModule();
+      r.renderDefaultRenames();
+      done();
+    });
   }
 
-  gulp.task(mTask('render-swig'), [mTask('configure-wrapper'), 'copy-user-swig'],
+  gulp.task(mTask('swig-render'), [mTask('swig-configure'), 'copy-user-swig'],
     function(done) {
       renderSwig(done);
     });
 
-  const swigDepTasks = [mTask('configure-wrapper')].concat(mTask('render-swig-deps', depends));
-  gulp.task(mTask('render-swig-deps'), swigDepTasks, function(done) {
+  const swigDepTasks = [mTask('swig-configure')].concat(mTask('swig-render-deps', depends));
+  gulp.task(mTask('swig-render-deps'), swigDepTasks, function(done) {
     renderSwig(done);
   });
 
@@ -128,7 +137,7 @@ settings.modules.forEach(function(moduleName) {
   });
 
 
-  gulp.task(mTask('swig'), [mTask('render-swig-deps'), mTask('render-swig')], function(done) {
+  gulp.task(mTask('swig'), [mTask('swig-render-deps'), mTask('swig-render')], function(done) {
     return runSequence(mTask('swig-only'), done);
   });
 });

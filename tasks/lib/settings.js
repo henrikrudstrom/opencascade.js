@@ -30,7 +30,7 @@ const modules = flatten([
   toolkits.TKernel, toolkits.TKMath, toolkits.TKAdvTools
 ]).filter((mod) => cannotParse.modules.indexOf(mod) === -1);
 
-module.exports = {
+var settings = {
   oce_include: '/home/henrik/OCE/include/oce',
   oce_lib: '/home/henrik/OCE/lib',
   force: argv.force,
@@ -45,6 +45,11 @@ module.exports = {
     userSwigDest: 'build/swig/user',
     cxxDest: 'build/src',
     headerCacheDest: 'cache/tree',
-    gyp: 'build/gyp'
+    gyp: 'build/gyp',
+    dist: 'dist'
   }
 };
+
+process.env['LD_LIBRARY_PATH'] = settings.oce_lib;
+
+module.exports = settings;

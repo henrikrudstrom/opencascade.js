@@ -13,11 +13,18 @@ const settings = require('./lib/settings.js');
 const paths = settings.paths;
 const common = require('./lib/common.js');
 
-
-function toolkitDeps(moduleName) {
+function getToolkit(moduleName) {
   return Object.keys(settings.toolkits).filter((tk) =>
     settings.toolkits[tk].indexOf(moduleName) >= 0
-  ).map((s) => `"-l${s}"`).join('\n');
+  )[0];
+}
+
+function toolkitDeps(moduleName) {
+  var modules = settings.depends[moduleName].concat([moduleName]);
+  var toolkits = modules.map(getToolkit);
+  return toolkits
+    .filter((m, index) => toolkits.indexOf(m) === index)
+    .map((s) => `      "-l${s}"`).join(',\n');
 }
 
 function writeConfig(moduleName, buildPath) {
@@ -27,8 +34,8 @@ function writeConfig(moduleName, buildPath) {
     "sources": ["../../src/${moduleName}_wrap.cxx"],
     "include_dirs": ["${settings.oce_include}"],
     "libraries": [
-      "${settings.oce_lib}",
-      ${toolkitDeps(moduleName)},
+      "-L${settings.oce_lib}",
+${toolkitDeps(moduleName)}
     ],
     "cflags": [
       "-DCSFDB", "-DHAVE_CONFIG_H", "-DOCC_CONVERT_SIGNALS",
@@ -41,6 +48,7 @@ function writeConfig(moduleName, buildPath) {
   }]
 }`
   mkdirp.sync(buildPath);
+  const file = `${buildPath}/binding.gyp`
   fs.writeFileSync(`${buildPath}/binding.gyp`, src);
 }
 
@@ -55,22 +63,23 @@ settings.modules.forEach(function(moduleName) {
 
 
   gulp.task(mTask('gyp-clean'), function(done) {
-    if (!fs.exists(buildPath)) done();
-    else run('node-gyp clean', {
-      cwd: buildPath
-    }).exec(done);
+    if (!fs.existsSync(buildPath)) return done();
+    else run(`rm -rf ${buildPath}`).exec(done);
+    console.log("CLEAN!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   });
 
-  gulp.task(mTask('gyp-configure'), [mTask('gyp-clean')], function(done) {
+  gulp.task(mTask('gyp-configure'), function(done) {
     writeConfig(moduleName, buildPath);
     run('node-gyp configure', {
-      cwd: buildPath
+      cwd: buildPath,
+      verbosity: 2
     }).exec(done);
   });
 
   gulp.task(mTask('gyp-build'), [mTask('gyp-configure')], function(done) {
     run('node-gyp build', {
-      cwd: buildPath
+      cwd: buildPath,
+      verbosity: 2
     }).exec(done);
   });
 

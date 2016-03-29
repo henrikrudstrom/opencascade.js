@@ -73,7 +73,7 @@ settings.modules.forEach(function(moduleName) {
     }).exec(done);
   });
 
-  gulp.task(mTask('gyp-build'), [mTask('gyp-configure')], function(done) {
+  gulp.task(mTask('gyp-build'), [mTask('gyp-configure'), mTask('swig')], function(done) {
     run('node-gyp build', {
       cwd: buildPath,
       verbosity: 2

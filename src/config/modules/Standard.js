@@ -1,6 +1,6 @@
 var common = require('../common.js');
-module.exports = function(conf, tree) {
-  common('Standard', conf, tree);
+module.exports = function(moduleName, conf, q) {
+  common(moduleName, conf, q);
   conf.ignore('*Standard_AncestorIterator');
   conf.ignore('*Standard_CLocaleSentry');
   conf.ignore('*Standard_Failure');

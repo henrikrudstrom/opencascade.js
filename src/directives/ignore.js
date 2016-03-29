@@ -1,3 +1,8 @@
-module.exports.configure = function(name, parent) {
-  return { name, parent };
+module.exports.configure = {
+  ignore(name, parent) {
+    return { name, parent, enabled: true };
+  },
+  include(name, parent) {
+    return { name, parent, enabled: false };
+  }
 };

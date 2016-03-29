@@ -31,25 +31,25 @@ gulp.task('copy-user-swig', function(done) {
   });
 });
 
-// Read dependencies from cached pygccxml output TODO: make it a module task
-gulp.task('parse-dependencies', function(done) {
-  const depFile = 'config/depends.json';
-
-  return run(`rm -rf ${depFile}`).exec((error) => {
-    if (error) return done(error);
-    var deps = {};
-    glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
-      const tree = loadTree(file);
-      const mod = path.basename(file).replace('.json', '');
-      deps[mod] = tree.readDependencies(mod);
-    });
-    fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
-  });
-});
-
-gulp.task('parse-all-headers', function(done) {
-  common.limitExecution('parse-headers', settings.modules, done);
-});
+// // Read dependencies from cached pygccxml output TODO: make it a module task
+// gulp.task('parse-dependencies', function(done) {
+//   const depFile = 'config/depends.json';
+//
+//   return run(`rm -rf ${depFile}`).exec((error) => {
+//     if (error) return done(error);
+//     var deps = {};
+//     glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
+//       const tree = loadTree(file);
+//       const mod = path.basename(file).replace('.json', '');
+//       deps[mod] = tree.readDependencies(mod);
+//     });
+//     fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
+//   });
+// });
+//
+// gulp.task('parse-all-headers', function(done) {
+//   common.limitExecution('parse-headers', settings.modules, done);
+// });
 
 
 settings.modules.forEach(function(moduleName) {
@@ -64,18 +64,18 @@ settings.modules.forEach(function(moduleName) {
     return common.moduleTask(name, mName);
   }
 
-  gulp.task(mTask('parse-headers'), function(done) {
-    if (fs.existsSync(treePath) && !settings.force) {
-      gutil.log('Skipping, headers already parsed', gutil.colors.magenta(treePath));
-      return done();
-    }
-    mkdirp.sync(paths.headerCacheDest);
-    return run(`python tasks/python/parse_headers.py ${moduleName} ${treePath}`).exec(done);
-  });
-
-  gulp.task(mTask('parse'), function(done) {
-    return runSequence(mTask('parse-headers'), done);
-  });
+  // gulp.task(mTask('parse-headers'), function(done) {
+  //   if (fs.existsSync(treePath) && !settings.force) {
+  //     gutil.log('Skipping, headers already parsed', gutil.colors.magenta(treePath));
+  //     return done();
+  //   }
+  //   mkdirp.sync(paths.headerCacheDest);
+  //   return run(`python tasks/python/parse_headers.py ${moduleName} ${treePath}`).exec(done);
+  // });
+  //
+  // gulp.task(mTask('parse'), function(done) {
+  //   return runSequence(mTask('parse-headers'), done);
+  // });
 
   gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
     run(`rm -f ${configPath}`).exec(function(error) {

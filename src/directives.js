@@ -28,6 +28,10 @@ function orderDirs(dir, list) {
 
 var order = [];
 directives.forEach((dir) => orderDirs(dir, order));
+
+
+
+
 directives.sort((a, b) => order.indexOf(b.name) - order.indexOf(a.name));
 
 module.exports = directives;

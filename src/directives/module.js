@@ -2,8 +2,6 @@ const fs = require('fs');
 
 const settings = require('../lib/settings.js');
 const paths = settings.paths;
-const common = require('../lib/common.js');
-const ignore = common.select.ignore;
 
 function renderTypedef(td) {
   return `typedef ${td.type} ${td.name};`;
@@ -16,7 +14,7 @@ function renderEnum(en) {
   return `enum ${en.name} {\n${values}\n};`;
 }
 
-module.exports.renderSwig = function(moduleName, config, tree) {
+module.exports.renderSwig = function(moduleName, config, q) {
   const depends = settings.depends[moduleName];
   const dependantModules = depends.map(function(dep) {
     return `%import "build/swig/gen/${dep}/module.i";`;
@@ -25,25 +23,26 @@ module.exports.renderSwig = function(moduleName, config, tree) {
     return `%include build/swig/gen/${dep}/headers.i`;
   }).join('\n');
 
-  var custom = '';
+  var userBefore = '';
+  var userAfter = '';
   var typedefs, enums, classes;
   if (fs.existsSync(`src/swig/${moduleName}.i`))
-    custom = `\n%include ../../user/${moduleName}.i\n`;
+    userBefore = `\n%include ../../user/${moduleName}.i\n`;
 
-  typedefs = tree.typedefs
-    .filter(ignore(config))
+  typedefs = q.typedefs
+    .filter(q.include)
     .map(renderTypedef)
     .join('\n');
   if (typedefs) typedefs += '\n';
 
-  enums = tree.enums
-    .filter(ignore(config))
+  enums = q.enums
+    .filter(q.include)
     .map(renderEnum)
     .join('\n');
   if (enums) enums += '\n';
 
-  classes = tree.classes
-    .filter(ignore(config))
+  classes = q.classes
+    .filter(q.include)
     .map((cls) => `%include classes/${cls.name}.i`)
     .join('\n');
   if (classes) classes += '\n';
@@ -63,12 +62,13 @@ ${dependantHeaders}
 %include noPrefix.i
 %include rename.i
 %include property.i
-${custom}
+${userBefore}
 
 
 ${typedefs}
 ${enums}
 ${classes}
+${userAfter}
 `;
   return src;
 };

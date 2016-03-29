@@ -1,5 +1,8 @@
 Standard_Boolean IsNull() const; TODO: const at the end...
 
+Interp on all relevant classes
+
+
 Wrap
 * gp
   - gce - constructors

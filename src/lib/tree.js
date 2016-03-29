@@ -61,7 +61,7 @@ Array.prototype.args = function(expr, fn) {
 
 function load(src) {
   const config = JSON.parse(src);
-  //console.log(src);
+  //
 
   config.types = function(expr, fn) {
     return [config.classes].select(expr, fn);

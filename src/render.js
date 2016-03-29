@@ -2,13 +2,14 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 
-const loadTree = require('./lib/tree.js');
+const query = require('./lib/query.js');
 const settings = require('./lib/settings.js');
 const paths = settings.paths;
 const directives = require('./directives.js');
 
 module.exports = function(moduleName) {
-  var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
+  var q = query.loadModule(moduleName);
+  //var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
   var config = JSON.parse(fs.readFileSync(`build/config/${moduleName}.json`));
 
   function write(name, src) {
@@ -21,7 +22,7 @@ module.exports = function(moduleName) {
   directives
     .filter((dir) => dir.module.renderSwig !== undefined)
     .forEach((dir) => {
-      var res = dir.module.renderSwig(moduleName, config, tree);
+      var res = dir.module.renderSwig(moduleName, config, q);
       if (typeof res === 'string')
         return write(dir.name, res);
       Object.keys(res).forEach((part) =>

@@ -4,6 +4,7 @@
     "node": true
   },
   "globals": {
+    "expect": true,
     "describe": true,
     "it": true,
     "before": true,

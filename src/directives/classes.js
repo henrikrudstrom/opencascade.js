@@ -1,6 +1,3 @@
-var common = require('../lib/common.js');
-var ignore = common.select.ignore;
-
 function renderArg(arg) {
   var res = arg.decl + ' ' + arg.name;
   if (arg.default) {
@@ -20,15 +17,16 @@ function renderFunction(func) {
 
 function renderClass(cls, config) {
   var functions = cls.members
-    .filter((member) => member.cls === 'calldef')
-    .filter(ignore(config, cls))
+    //.filter((member) => member.cls === 'calldef')
+    .filter(cls.include)
+    //.filter(ignore(config, cls))
     .map(renderFunction).join('');
   var base = '';
   if (cls.bases.length > 0) {
     base = ' : ' + cls.bases[0].access + ' ' + cls.bases[0].name;
   }
   const constructors = cls.constructors
-    .filter(ignore(config, cls))
+    .filter(cls.include)
     .map(renderFunction).join('');
   return `\
 %nodefaultctor ${cls.name};
@@ -41,10 +39,11 @@ class ${cls.name}${base} {
 };`;
 }
 
-module.exports.renderSwig = function(moduleName, config, tree) {
+module.exports.renderSwig = function(moduleName, config, q) {
   var parts = {};
-  tree.classes
-    .filter(ignore(config))
+  q.classes
+    .filter(q.include)
+    //.filter(ignore(config))
     .forEach(function(cls) {
       parts[cls.name] = renderClass(cls, config);
     });

@@ -52,4 +52,4 @@ module.exports = function(conf, tree) {
     var self = trsf.replace(/e$/, '') + 'ed';
     conf.rename(self, camelCase(trsf));
   });
-}
+};

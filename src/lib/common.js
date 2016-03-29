@@ -1,12 +1,10 @@
-
 function match(exp, name) {
   exp = new RegExp('^' + exp.replace('*', '.*') + '$');
   return exp.test(name);
-};
+}
 module.exports.match = match;
 
 function ignore(config, cls, member) {
-  //console.log(config)
   return config.ignore.some(function(obj) {
     if (member) {
       if (obj.parent && cls !== obj.parent) return false;

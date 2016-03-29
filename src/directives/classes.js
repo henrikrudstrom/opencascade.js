@@ -38,15 +38,11 @@ class ${cls.name}${base} {
     ${constructors}
     /* Member functions */
     ${functions}
-};
-`;
+};`;
 }
 
 module.exports.renderSwig = function(moduleName, config, tree) {
   var parts = {};
-  console.log("CLASSES")
-  //console.log(config)
-  console.log("CLASSES")
   tree.classes
     .filter(ignore(config))
     .forEach(function(cls) {

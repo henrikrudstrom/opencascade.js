@@ -1,15 +1,13 @@
 'use-strict';
 const fs = require('fs');
-const path = require('path');
 const mkdirp = require('mkdirp');
-const glob = require('glob');
 
 const gulp = require('gulp');
 const runSequence = require('run-sequence');
 const run = require('gulp-run');
 const gutil = require('gulp-util');
 
-const settings = require('./lib/settings.js');
+const settings = require('../src/lib/settings.js');
 const paths = settings.paths;
 const common = require('./lib/common.js');
 
@@ -46,9 +44,8 @@ ${toolkitDeps(moduleName)}
     "cflags!": ["-fno-exceptions"],
     "cflags_cc!": ["-fno-exceptions"]
   }]
-}`
+}`;
   mkdirp.sync(buildPath);
-  const file = `${buildPath}/binding.gyp`
   fs.writeFileSync(`${buildPath}/binding.gyp`, src);
 }
 
@@ -64,8 +61,8 @@ settings.modules.forEach(function(moduleName) {
 
   gulp.task(mTask('gyp-clean'), function(done) {
     if (!fs.existsSync(buildPath)) return done();
-    else run(`rm -rf ${buildPath}`).exec(done);
-    console.log("CLEAN!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    run(`rm -rf ${buildPath}`).exec(done);
+    return undefined;
   });
 
   gulp.task(mTask('gyp-configure'), function(done) {

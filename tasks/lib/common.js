@@ -1,23 +1,10 @@
 'use-strict';
 var runSequence = require('run-sequence');
 var fs = require('fs');
-var path = require('path');
 var mkdirp = require('mkdirp');
 var hashFiles = require('hash-files');
-//
-// var argv = require('yargs').argv;
-//
-// global.SETTINGS = {
-//   oce_include: '/home/henrik/OCE/include/oce',
-//   force: argv.force,
-//   modules: JSON.parse(fs.readFileSync('config/modules.json')),
-//   depends: JSON.parse(fs.readFileSync('config/depends.json'))
-// };
+var settings = require('../../src/lib/settings.js');
 
-module.exports.match = function(exp, name) {
-  var exp = new RegExp('^' + exp.replace('*', '.*') + '$');
-  return exp.test(name);
-};
 function moduleTask(name, mName) {
   if (Array.isArray(mName)) {
     return mName.map((m) => moduleTask(name, m));
@@ -32,26 +19,26 @@ module.exports.moduleTask = moduleTask;
 
 
 module.exports.runIfChanged = function(files, name, cb) {
-  var hashPath = `tmp/hash/${name}.hash`
+  var hashPath = `tmp/hash/${name}.hash`;
   var hashValue = undefined;
 
-  function hasChanged(hasChanged) {
+  function hasChanged(fn) {
     var currentHash;
-    if (SETTINGS.force) return hasChanged(false, true);
-    if (!files.every(fs.existsSync)) return hasChanged(false, true);
+    if (settings.force) return fn(false, true);
+    if (!files.every(fs.existsSync)) return fn(false, true);
 
-    if (!fs.existsSync(hashPath)) return hasChanged(false, true);
+    if (!fs.existsSync(hashPath)) return fn(false, true);
     currentHash = fs.readFileSync(hashPath);
     hashFiles({
-      files: files,
+      files,
       noGlob: true
     }, function(error, hash) {
-      if (error) return hasChanged(error, false);
+      if (error) return fn(error, false);
       hashValue = hash;
       if (hash.toString() !== currentHash.toString()) {
-        hasChanged(false, true);
+        fn(false, true);
       } else {
-        hasChanged(false, false);
+        fn(false, false);
       }
       return null;
     });
@@ -62,8 +49,8 @@ module.exports.runIfChanged = function(files, name, cb) {
     return runSequence(name, function(error) {
       if (error) return cb(error);
       mkdirp.sync('tmp/hash');
-      fs.writeFile(hashPath, hashValue, function(error) {
-        if (error) return cb(error);
+      fs.writeFile(hashPath, hashValue, function(error2) {
+        if (error2) return cb(error2);
         return cb();
       });
       return null;
@@ -83,9 +70,9 @@ module.exports.limitExecution = function(task, modules, done) {
   function split(array, n) {
     var spl = [];
     for (var i = 0; i < n; i++) {
-      spl.push(array.filter((e, index) => {
-        return index % n === i;
-      }));
+      var ii = i;
+      // TODO: declared function inside loop...
+      spl.push(array.filter((e, index) => index % n === ii));
     }
 
     return spl;

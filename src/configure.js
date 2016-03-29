@@ -1,8 +1,10 @@
 const fs = require('fs');
+
 const directives = require('./directives.js');
-const loadTree = require('../tasks/lib/tree.js');
-const settings = require('../tasks/lib/settings.js');
+const loadTree = require('./lib/tree.js');
+const settings = require('./lib/settings.js');
 const paths = settings.paths;
+
 module.exports = function configure(moduleName) {
   var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
   var data = {};

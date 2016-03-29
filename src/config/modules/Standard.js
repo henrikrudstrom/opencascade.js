@@ -8,4 +8,4 @@ module.exports = function(conf, tree) {
   conf.ignore('*Standard_StdAllocator');
   conf.ignore('*Standard_MMgrOpt');
   conf.ignore('Standard', 'Free');
-}
+};

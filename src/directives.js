@@ -1,9 +1,5 @@
 const glob = require('glob');
 const path = require('path');
-const loadConfig = require('../tasks/lib/config.js');
-const loadTree = require('../tasks/lib/tree.js');
-const settings = require('../tasks/lib/settings.js');
-const paths = settings.paths;
 
 const directives = glob.sync(`${__dirname}/directives/*.js`)
   .map((dirPath) => {

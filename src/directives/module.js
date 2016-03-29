@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-const settings = require('../../tasks/lib/settings.js');
+const settings = require('../lib/settings.js');
 const paths = settings.paths;
-var common = require('../lib/common.js');
-var ignore = common.select.ignore;
+const common = require('../lib/common.js');
+const ignore = common.select.ignore;
 
 function renderTypedef(td) {
   return `typedef ${td.type} ${td.name};`;

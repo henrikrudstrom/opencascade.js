@@ -1,4 +1,3 @@
-
 var camelCase = require('camel-case');
 var common = require('../lib/common.js');
 var ignore = common.select.ignore;

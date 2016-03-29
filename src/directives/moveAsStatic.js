@@ -14,7 +14,7 @@ _${moduleName}.${conf.newParent}.__proto__.${conf.newName} = function(){
 
 //header
 
-function(moduleName){
+function header(moduleName){
   const src = `\
 const _${moduleName} = require('${moduleName}.node');
   `

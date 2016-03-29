@@ -28,3 +28,4 @@ along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 %include javascript/v8/std_string.i
 %include javascript/v8/std_common.i
 %include javascript/v8/javascripttypemaps.swg
+%include attribute.i

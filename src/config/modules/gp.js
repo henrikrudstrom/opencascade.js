@@ -46,6 +46,21 @@ module.exports = function(conf, tree) {
   conf.rename('gp_XY', 'XY');
   conf.rename('gp_XYZ', 'XYZ');
 
+  conf.property('gp_XY', 'X', 'double');
+  conf.property('gp_XY', 'Y', 'double');
+
+  //for debugging
+  conf.ignore('gp_A*');
+  conf.ignore('gp_C*');
+  conf.ignore('gp_D*');
+  conf.ignore('gp_E*');
+  conf.ignore('gp_G*');
+  conf.ignore('gp_H*');
+  conf.ignore('gp_L*');
+  conf.ignore('gp_M*');
+  conf.ignore('gp_P*');
+  conf.ignore('gp_T*');
+  conf.ignore('gp_V*');
 
   const trsfs = ['Mirror', 'Rotate', 'Scale', 'Transform', 'Translate'];
   trsfs.forEach((trsf) => {

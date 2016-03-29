@@ -27,8 +27,8 @@ module.exports.renderSwig = function(moduleName, config, tree) {
 
   var custom = '';
   var typedefs, enums, classes;
-  if (fs.exists(`${paths.userSwigDest}/${moduleName}.i`))
-    custom = `\n%include ../user/${moduleName}.i\n`;
+  if (fs.existsSync(`src/swig/${moduleName}.i`))
+    custom = `\n%include ../../user/${moduleName}.i\n`;
 
   typedefs = tree.typedefs
     .filter(ignore(config))
@@ -62,6 +62,7 @@ ${dependantHeaders}
 %include camelCase.i
 %include noPrefix.i
 %include rename.i
+%include property.i
 ${custom}
 
 

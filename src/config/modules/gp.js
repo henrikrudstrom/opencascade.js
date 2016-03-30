@@ -1,8 +1,7 @@
-const common = require('../common.js');
+
 const camelCase = require('camel-case');
 
 module.exports = function(moduleName, conf, q) {
-  common(moduleName, conf, q);
 
   conf.ignore('*gp_VectorWithNullMagnitude');
   conf.rename('gp_Ax1', 'Axis');
@@ -45,25 +44,12 @@ module.exports = function(moduleName, conf, q) {
   conf.rename('gp_VectorWithNullMagnitude', 'VectorWithNullMagnitude');
   conf.rename('gp_XY', 'XY');
   conf.rename('gp_XYZ', 'XYZ');
-
   conf.property('gp_XY', 'X', 'double');
   conf.property('gp_XY', 'Y', 'double');
 
-  //for debugging
-  // conf.ignore('gp_A*');
-  // conf.ignore('gp_C*');
-  // conf.ignore('gp_D*');
-  // conf.ignore('gp_E*');
-  // conf.ignore('gp_G*');
-  // conf.ignore('gp_H*');
-  // conf.ignore('gp_L*');
-  // conf.ignore('gp_M*');
-  // conf.ignore('gp_P*');
-  // conf.ignore('gp_T*');
-  // conf.ignore('gp_V*');
-  conf.ignore('gp_*');
-  conf.include('gp_Quaternion');
-  conf.include('gp_Pnt');
+  //conf.ignore('gp_*');
+  // conf.include('gp_Quaternion');
+  // conf.include('gp_Pnt');
   conf.ignore('gp_QuaternionSLerp');
   conf.ignore('gp_QuaternionNLerp');
 

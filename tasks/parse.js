@@ -9,7 +9,7 @@ const runSequence = require('run-sequence');
 const run = require('gulp-run');
 const gutil = require('gulp-util');
 
-const loadTree = require('../src/lib/tree.js');
+const depend = require('../src/depend.js');
 const settings = require('../src/lib/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
@@ -28,6 +28,16 @@ gulp.task('copy-user-swig', function(done) {
   });
 });
 
+
+// Read dependencies from cached pygccxml output TODO: make it a module task
+gulp.task('parse-dep-types', function(done) {
+  var res = {}
+  depend.findDependentTypes(['Geom_BSplineCurve', 'Geom_SphericalSurface'], res)
+  console.log("=======================================")
+  console.log(Object.keys(res));
+});
+
+
 // Read dependencies from cached pygccxml output TODO: make it a module task
 gulp.task('parse-dependencies', function(done) {
   const depFile = 'config/depends.json';
@@ -36,9 +46,9 @@ gulp.task('parse-dependencies', function(done) {
     if (error) return done(error);
     var deps = {};
     glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
-      const tree = loadTree(file);
       const mod = path.basename(file).replace('.json', '');
-      deps[mod] = tree.readDependencies(mod);
+      console.log(mod)
+      deps[mod] = depend.readModuleDependencies(mod);
     });
     fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
   });
@@ -51,6 +61,7 @@ gulp.task('parse-all-headers', function(done) {
 
 settings.modules.forEach(function(moduleName) {
   const treePath = `${paths.headerCacheDest}/${moduleName}.json`;
+
   function mTask(name, mName) {
     if (mName === undefined)
       mName = moduleName;

@@ -22,6 +22,7 @@ module.exports = function(moduleName) {
   directives
     .filter((dir) => dir.module.renderSwig !== undefined)
     .forEach((dir) => {
+      //console.log("Render", moduleName.constructor.type)
       var res = dir.module.renderSwig(moduleName, config, q);
       if (typeof res === 'string')
         return write(dir.name, res);

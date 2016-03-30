@@ -27,16 +27,17 @@ function flatten(obj) {
 }
 
 const modules = flatten([
-  toolkits.TKernel, toolkits.TKMath, toolkits.TKAdvTools
+  toolkits.TKG3d, toolkits.TKernel, toolkits.TKMath, toolkits.TKAdvTools
 ]).filter((mod) => cannotParse.modules.indexOf(mod) === -1);
-
+const depends = fs.existsSync('config/depends.json') ?
+  JSON.parse(fs.readFileSync('config/depends.json')) : {};
 var settings = {
   oce_include: '/home/henrik/OCE/include/oce',
   oce_lib: '/home/henrik/OCE/lib',
   force: argv.force,
   modules,
   toolkits,
-  depends: JSON.parse(fs.readFileSync('config/depends.json')),
+  depends,
 
   paths: {
     configDest: 'build/config',

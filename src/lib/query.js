@@ -5,67 +5,25 @@ function match(exp, name) {
   return exp.test(name);
 }
 
-// function tag(config, name, cls, member) {
-//   return config[name].reverse() // Last entry to the list is valid
-//     .find(function(obj) {
-//       match.apply(null, members.split('::'));
-//     });
-// }
-
 function tag(config, name, cls, member) {
-
-
-  if (true) {
-
-    ////console.log("config", config)
-    //console.log("name", name)
-    //console.log(cls, member)
+  ////console.log("tag", name, cls, member)
+  if (Object.keys(config).indexOf(name) === -1) {
+    return undefined;
   }
 
-  return config[name].reverse() // Last entry to the list is valid
-    .find(function(obj) {
-      var found = false;
 
+  var tags = config[name] // Last entry to the list is valid
+    .filter(function(obj) {
       if (obj.parent)
-        return match(obj.parent, cls) && match(obj.name, member)
-      return match(obj.name, cls)
-
+        return match(obj.parent, cls) && match(obj.name, member);
+      return match(obj.name, cls);
     });
+  if (tags.length < 1) return null;
+  return tags[tags.length - 1];
 }
 
-function ignore(config, cls, member) {
-  const obj = tag(config, 'ignore', cls, member);
-
-
-  if (obj) {
-    if (!obj.enabled)
-      return obj.enabled;
-  }
-
-  return false;
-}
 
 module.exports.match = match;
-// module.exports.ignore = ignore;
-// // module.exports.select = {
-// //   ignore(config, cls) {
-// //     return function(obj) {
-// //       if (cls !== undefined)
-// //         return !ignore(config, cls.name, obj.name);
-// //       return !ignore(config, obj.name);
-// //     };
-// //   }
-// // };
-//
-// module.exports.select = {
-//   ignore(config, cls) {
-//     return function(obj) {
-//       if (cls !== undefined)
-//         return !ignore(config, cls, obj);
-//       return !ignore(config, obj);
-//     };
-//   }
-// };
 
 function get(name) {
   return this.find((m) => m.name === name);
@@ -73,21 +31,20 @@ function get(name) {
 
 function initMember(conf, cls, mem) {
   mem.tag = function(name) {
-    return tag(conf, name, cls, mem);
+    return tag(conf, name, cls.name, mem.name);
   };
-  // mem.ignore = function() {
-  //   return mem.tag('ignore') && mem.tag('ignore').enabled;
-  // }
 }
 
 function initType(conf, cls) {
   cls.tag = function(name) {
+    //console.log("tyoetag", conf, name);
     return tag(conf, name, cls.name);
   };
 
   if (!cls.constructors) cls.constructors = [];
   if (!cls.members) cls.members = [];
-  cls.constructors.concat(cls.members).forEach((mem) => initMember(conf, cls, mem));
+  cls.calldefs = cls.constructors.concat(cls.members);
+  cls.calldefs.forEach((mem) => initMember(conf, cls, mem));
   cls.constructors.get = get.bind(cls.constructors);
   cls.members.get = get.bind(cls.members);
 
@@ -100,35 +57,40 @@ function initType(conf, cls) {
   return cls;
 }
 
-
-module.exports.loadModule = function(moduleName, config) {
+var moduleCache = {};
+module.exports.loadModule = function loadModule(moduleName, opts) {
+  opts = opts || {};
+  if (moduleCache.hasOwnProperty(moduleName) && opts.cache){
+    console.log("cahced")
+    return moduleCache[moduleName];
+  }
   const tree = JSON.parse(fs.readFileSync(`cache/tree/${moduleName}.json`));
-  if (config === undefined)
-    config = JSON.parse(fs.readFileSync(`build/config/${moduleName}.json`));
+  const configPath = `build/config/${moduleName}.json`
+  var config = opts.config || {};
+  if (opts.config === undefined && fs.existsSync(configPath)) {
+    config = JSON.parse(fs.readFileSync(configPath));
+  }
+  //config = JSON.parse(fs.readFileSync(configPath));
   tree.types = [tree.typedefs, tree.enums, tree.classes].reduce((a, b) => a.concat(b));
   tree.types.forEach((cls) => initType(config, cls));
 
-  tree.memberDepends = function(mem) {
-    return [mem.returnType].concat(mem.arguments.map((a) => a.type))
-      .filter((t, index, array) => array.indexOf(t) === index);
-  };
-
-  tree.classDepends = function(cls) {
-    return [cls.name]
-      .concat(cls.bases.map(tree.classDepends))
-      .concat(cls.members.filter((m) => ignore(config, m)))
-      .filter((t, index, array) => array.indexOf(t) === index);
-  };
   tree.types.get = get.bind(tree.types);
   tree.typedefs.get = get.bind(tree.typedefs);
   tree.classes.get = get.bind(tree.classes);
-
-  tree.include = function(cls) {
-    if (cls.tag('ignore')) {
-      return !cls.tag('ignore').enabled;
-    }
-    return true;
+  tree.classes.calldefs = function() {
+    return tree.classes.calldefs
+      .map((mem) => mem.calldefs)
+      .reduce((a, b) => a.concat(b));
   }
+  tree.include = function(cls) {
+    //console.log("include", cls.name, cls.tag('ignore'));
+    if (cls.tag('ignore')) {
+      //console.log("tagged", cls.name, cls.tag('ignore'))
+      return !cls.tag('ignore').enabled;
+    };
 
+    return true;
+  };
+  moduleCache[moduleName] = tree;
   return tree;
 };

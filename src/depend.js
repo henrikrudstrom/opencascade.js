@@ -77,20 +77,22 @@ function modName(name) {
   return
 }
 
-module.exports.findDependentTypes = function findDependentTypes(types, res) {
+module.exports.findDependentTypes = function findDependentTypes(types, config, res) {
   //console.log("find", types, types.forEach);
   if (res === undefined) res = {};
   types.forEach((name) => {
     if (res.hasOwnProperty(name)) return;
     res[name] = true;
-    //console.log("name", name)
-    var moduleName = name.match(/(?:Handle_)*(\w+?)_\w+/)[1]
-    //console.log(moduleName, name);
-    var mod = query.loadModule(moduleName);
+    console.log("name", name)
+    var matchRes = name.match(/(?:Handle_)*(\w+?)_\w+/)
+    if (!matchRes) return;
+    var moduleName = matchRes[1]
+      //console.log(moduleName, name);
+    var mod = query.loadModule(moduleName, config);
     var type = mod.types.get(name)
     if (type === undefined) return;
     var deps = classDepends(type)
-    findDependentTypes(deps, res);
+    findDependentTypes(deps, config, res);
   })
   return res;
 }

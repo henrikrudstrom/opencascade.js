@@ -70,6 +70,7 @@ module.exports.loadModule = function loadModule(moduleName, opts) {
   if (opts.config === undefined && fs.existsSync(configPath)) {
     config = JSON.parse(fs.readFileSync(configPath));
   }
+  tree.config = config;
   //config = JSON.parse(fs.readFileSync(configPath));
   tree.types = [tree.typedefs, tree.enums, tree.classes].reduce((a, b) => a.concat(b));
   tree.types.forEach((cls) => initType(config, cls));

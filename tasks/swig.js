@@ -83,10 +83,14 @@ settings.modules.forEach(function(moduleName) {
 
       var configure = require('../src/configure.js');
       var data = configure(moduleName);
-
+      console.log(data)
       mkdirp.sync('build/config/');
-      const src = JSON.stringify(data, null, 2);
-      return fs.writeFile(configPath, src, done);
+      var src = JSON.stringify(data, null, 2);
+      fs.writeFileSync(configPath, src);
+      data = configure.post(moduleName);
+      src = JSON.stringify(data, null, 2);
+      return fs.writeFileSync(configPath, src);
+      done();
     });
   });
 

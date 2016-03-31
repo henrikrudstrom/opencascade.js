@@ -25,7 +25,7 @@ function configure(moduleName, data, moduleConf) {
       Object.keys(methods).forEach((m) => {
         conf[m] = function() {
           var res = methods[m].apply(null, arguments);
-          console.log("res", res, arrify(res));
+          //console.log("res", res, arrify(res));
           // var args = [].slice.call(arguments, 1);
           data[dir.name] = data[dir.name].concat(arrify(res));
         };
@@ -34,23 +34,41 @@ function configure(moduleName, data, moduleConf) {
     });
 
   var q = query.loadModule(moduleName, data);
-  if (!moduleConf) {
-    var commonConf = require(`./config/common.js`);
-    commonConf(moduleName, conf, q);
-    if (fs.existsSync(`src/config/modules/${moduleName}.js`))
-      moduleConf = require(`./config/modules/${moduleName}.js`);
+  if (moduleConf) {
+    moduleConf(moduleName, conf, q);
+    return data;
   }
-  console.log("data", data);
-  //////console.log(conf)
+  var commonConf = require('./config/common.js');
+  commonConf(moduleName, conf, q);
 
-  if (moduleConf) moduleConf(moduleName, conf, q);
+  if (fs.existsSync(`src/config/modules/${moduleName}.js`)) {
+    moduleConf = require(`./config/modules/${moduleName}.js`);
+    moduleConf(moduleName, conf, q);
+  }
 
-  if (yargs.argv.debug) {
-    if (fs.existsSync('src/config/debug.js'))
-      moduleConf = require(`./config/debug.js`);
+  if (yargs.argv.debug && fs.existsSync('src/config/debug.js')) {
+    const debugConf = require('./config/debug.js');
+    debugConf(moduleName, conf, q);
   }
 
   return data;
 }
 
+function postConfigure(moduleName) {
+  var q = query.loadModule(moduleName);
+  var data = q.config;
+
+  directives
+    .filter((dir) => dir.module.postConfigure !== undefined)
+    .forEach((dir) =>{
+      var res = dir.module.postConfigure(moduleName, q);
+      data[dir.name] = data[dir.name].concat(arrify(res))
+    });
+  console.log("=============")
+  console.log(data)
+  console.log("=============")
+  return data;
+}
+
 module.exports = configure;
+module.exports.post = postConfigure;

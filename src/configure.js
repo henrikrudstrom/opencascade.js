@@ -2,9 +2,9 @@ const fs = require('fs');
 const yargs = require('yargs');
 const arrify = require('arrify');
 var directives = require('./directives.js');
-const loadTree = require('./lib/tree.js');
-const settings = require('./lib/settings.js');
-const query = require('./lib/query.js');
+
+const settings = require('./settings.js');
+const query = require('./query.js');
 const paths = settings.paths;
 
 
@@ -38,16 +38,17 @@ function configure(moduleName, data, moduleConf) {
     moduleConf(moduleName, conf, q);
     return data;
   }
-  var commonConf = require('./config/common.js');
+  console.log(settings.paths.wrapper, process.cwd())
+  var commonConf = require(`${settings.paths.wrapper}/common.js`);
   commonConf(moduleName, conf, q);
 
-  if (fs.existsSync(`src/config/modules/${moduleName}.js`)) {
-    moduleConf = require(`./config/modules/${moduleName}.js`);
+  if (fs.existsSync(`${settings.paths.wrapper}/modules/${moduleName}.js`)) {
+    moduleConf = require(`./wrapper/modules/${moduleName}.js`);
     moduleConf(moduleName, conf, q);
   }
 
-  if (yargs.argv.debug && fs.existsSync('src/config/debug.js')) {
-    const debugConf = require('./config/debug.js');
+  if (yargs.argv.debug && fs.existsSync(`${settings.paths.wrapper}/debug.js`)) {
+    const debugConf = require(`${settings.paths.wrapper}/debug.js`);
     debugConf(moduleName, conf, q);
   }
 
@@ -60,12 +61,12 @@ function postConfigure(moduleName) {
 
   directives
     .filter((dir) => dir.module.postConfigure !== undefined)
-    .forEach((dir) =>{
+    .forEach((dir) => {
       var res = dir.module.postConfigure(moduleName, q);
       data[dir.name] = data[dir.name].concat(arrify(res))
     });
   console.log("=============")
-  console.log(data)
+  //console.log(data)
   console.log("=============")
   return data;
 }

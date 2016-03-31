@@ -1,4 +1,4 @@
-var settings = require('./lib/settings.js')
+var settings = require('./settings.js')
 var gp = require('../dist/lib/gp.js');
 
 //var Geom2d = require('../build/Release/Geom2d.node');

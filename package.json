@@ -30,6 +30,8 @@
     "eslint": "^2.5.1",
     "eslint-config-airbnb": "^6.2.0",
     "eslint-plugin-react": "^4.2.3",
+    "extend": "^3.0.0",
+    "graspjs": "^0.4.0",
     "gulp": "^3.9.1",
     "gulp-exec": "^2.1.2",
     "gulp-jasmine": "^2.3.0",

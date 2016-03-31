@@ -3,7 +3,7 @@ var runSequence = require('run-sequence');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var hashFiles = require('hash-files');
-var settings = require('../../src/lib/settings.js');
+var settings = require('../../src/settings.js');
 
 function moduleTask(name, mName) {
   if (Array.isArray(mName)) {

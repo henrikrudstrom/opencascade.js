@@ -1,24 +1,24 @@
 const fs = require('fs');
-
+const settings = require('./settings');
 function match(exp, name) {
   exp = new RegExp('^' + exp.replace('*', '.*') + '$');
   return exp.test(name);
 }
 
 function tag(config, name, cls, member) {
-  ////console.log("tag", name, cls, member)
   if (Object.keys(config).indexOf(name) === -1) {
     return undefined;
   }
 
 
-  var tags = config[name] // Last entry to the list is valid
+  var tags = config[name]
     .filter(function(obj) {
       if (obj.parent)
         return match(obj.parent, cls) && match(obj.name, member);
       return match(obj.name, cls);
     });
   if (tags.length < 1) return null;
+  // the last match overrides the earlier ones.
   return tags[tags.length - 1];
 }
 
@@ -64,7 +64,7 @@ module.exports.loadModule = function loadModule(moduleName, opts) {
     console.log("cahced")
     return moduleCache[moduleName];
   }
-  const tree = JSON.parse(fs.readFileSync(`cache/tree/${moduleName}.json`));
+  const tree = JSON.parse(fs.readFileSync(`${settings.paths.headerCacheDest}/${moduleName}.json`));
   const configPath = `build/config/${moduleName}.json`
   var config = opts.config || {};
   if (opts.config === undefined && fs.existsSync(configPath)) {

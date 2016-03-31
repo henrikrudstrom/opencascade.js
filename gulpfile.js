@@ -4,7 +4,7 @@ requireDir('./tasks');
 const jasmine = require('gulp-jasmine');
 
 const yargs = require('yargs');
-const settings = require('./src/lib/settings.js');
+const settings = require('./src/settings.js');
 const test = require('./tasks/test.js');
 
 console.log(settings.modules)

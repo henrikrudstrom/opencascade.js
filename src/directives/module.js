@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const settings = require('../lib/settings.js');
+const settings = require('../settings.js');
 const paths = settings.paths;
 
 function renderTypedef(td) {

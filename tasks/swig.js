@@ -11,8 +11,7 @@ const gutil = require('gulp-util');
 
 const render = require('../src/render.js');
 
-const loadTree = require('../src/lib/tree.js');
-const settings = require('../src/lib/settings.js');
+const settings = require('../src/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
 
@@ -64,32 +63,19 @@ settings.modules.forEach(function(moduleName) {
     return common.moduleTask(name, mName);
   }
 
-  // gulp.task(mTask('parse-headers'), function(done) {
-  //   if (fs.existsSync(treePath) && !settings.force) {
-  //     gutil.log('Skipping, headers already parsed', gutil.colors.magenta(treePath));
-  //     return done();
-  //   }
-  //   mkdirp.sync(paths.headerCacheDest);
-  //   return run(`python tasks/python/parse_headers.py ${moduleName} ${treePath}`).exec(done);
-  // });
-  //
-  // gulp.task(mTask('parse'), function(done) {
-  //   return runSequence(mTask('parse-headers'), done);
-  // });
-
   gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
     run(`rm -f ${configPath}`).exec(function(error) {
       if (error) return done(error);
 
       var configure = require('../src/configure.js');
       var data = configure(moduleName);
-      console.log(data)
+
       mkdirp.sync('build/config/');
       var src = JSON.stringify(data, null, 2);
       fs.writeFileSync(configPath, src);
       data = configure.post(moduleName);
       src = JSON.stringify(data, null, 2);
-      return fs.writeFileSync(configPath, src);
+      fs.writeFileSync(configPath, src);
       done();
     });
   });

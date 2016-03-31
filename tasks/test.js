@@ -56,7 +56,7 @@ module.exports.reporter = reporter;
 
 
 
-const settings = require('../src/lib/settings.js');
+const settings = require('../src/settings.js');
 
 settings.modules.forEach(function(moduleName) {
   gulp.task('test:' + moduleName, function() {

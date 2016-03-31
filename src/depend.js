@@ -1,4 +1,4 @@
-const query = require('./lib/query.js');
+const query = require('./query.js');
 
 function pass() {
   return true;
@@ -77,17 +77,15 @@ function modName(name) {
   return
 }
 
+// finds all types that are used by a class, looks at all member arguments and types.
 module.exports.findDependentTypes = function findDependentTypes(types, config, res) {
-  //console.log("find", types, types.forEach);
   if (res === undefined) res = {};
   types.forEach((name) => {
     if (res.hasOwnProperty(name)) return;
     res[name] = true;
-    console.log("name", name)
     var matchRes = name.match(/(?:Handle_)*(\w+?)_\w+/)
     if (!matchRes) return;
     var moduleName = matchRes[1]
-      //console.log(moduleName, name);
     var mod = query.loadModule(moduleName, config);
     var type = mod.types.get(name)
     if (type === undefined) return;

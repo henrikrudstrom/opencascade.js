@@ -1,15 +1,12 @@
-var depend = require('../depend')
+var depend = require('../depend');
 module.exports.configure = {
   ignore(name, parent) {
-    console.log('ignore');
     return { name, parent, enabled: true };
   },
   include(name, parent) {
-    console.log("include");
     return { name, parent, enabled: false };
   },
   includeDependencies(name, parent) {
-    console.log("include");
     return { name, parent, enabled: false, deps: true };
   }
   // includeDependencies(moduleName, conf, name, parent) {
@@ -35,7 +32,9 @@ module.exports.postConfigure = function(moduleName, q) {
   return q.config.ignore
     .filter((obj) => obj.deps)
     .map((obj) => Object.keys(depend.findDependentTypes([obj.name])))
-    .reduce((a, b) => a.concat(b))
+    .reduce((a, b) => a.concat(b), [])
     .filter((type) => type.startsWith(`${moduleName}_`))
-    .map(module.exports.configure.include);
+    .map((type) => {
+      return { name: type, enabled: false };
+    });
 };

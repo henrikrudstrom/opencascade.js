@@ -10,7 +10,7 @@ const run = require('gulp-run');
 const gutil = require('gulp-util');
 
 const depend = require('../src/depend.js');
-const settings = require('../src/lib/settings.js');
+const settings = require('../src/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
 

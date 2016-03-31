@@ -7,7 +7,7 @@ const runSequence = require('run-sequence');
 const run = require('gulp-run');
 const gutil = require('gulp-util');
 
-const settings = require('../src/lib/settings.js');
+const settings = require('../src/settings.js');
 const paths = settings.paths;
 const common = require('./lib/common.js');
 

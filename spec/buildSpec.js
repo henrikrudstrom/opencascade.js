@@ -1,6 +1,6 @@
 describe('build', function() {
   var configure = require('../src/configure.js');
-  var query = require('../src/lib/query.js');
+  var query = require('../src/query.js');
   ///
 
   it('can query', function() {

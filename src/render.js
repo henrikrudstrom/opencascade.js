@@ -2,15 +2,14 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 
-const query = require('./lib/query.js');
-const settings = require('./lib/settings.js');
+const query = require('./query.js');
+const settings = require('./settings.js');
 const paths = settings.paths;
 const directives = require('./directives.js');
 
 module.exports = function(moduleName) {
   var q = query.loadModule(moduleName);
-  //var tree = loadTree(`${paths.headerCacheDest}/${moduleName}.json`);
-  var config = JSON.parse(fs.readFileSync(`build/config/${moduleName}.json`));
+  var config = JSON.parse(fs.readFileSync(`${settings.paths.configDest}/${moduleName}.json`));
 
   function write(name, src) {
     var dest = `${paths.swigDest}/${moduleName}/${name}.i`;

@@ -11,40 +11,12 @@ function readConfig(name) {
 const toolkits = readConfig('toolkits.json');
 const cannotParse = readConfig('cannot-parse.json');
 var depends = readConfig('depends.json');
-// var dep = depends['Adaptor3d']
-// dep.constructor.name;
-// console.log(dep, dep.constructor.name)
-// Array.prototype.filter.apply(dep, cannotParse.some)
-// for(var i in depends){
-//   console.log(i, depends[i].constructor.name, Array.filter)
-//   var deps = depends[i];
-//   console.log(deps.filter(cannotParse.some));
-// }
+// remove dependencies that are excluded
+Object.keys(depends).forEach(function(d) {
+  var deps = depends[d];
+  depends[d] = depends[d].filter((d) => !cannotParse.modules.some((m) => m === d))
+});
 
-// Object.keys(depends).forEach(function(d) {
-//   console.log(depends[d])
-//   var deps = depends[d];
-//   console.log("dep", deps, typeof deps)
-//   depends[d] = deps.filter(cannotParse.some);
-///});
-
-// function flatten(obj) {
-//   function toArray(o) {
-//     if (typeof o === 'string')
-//       return [o];
-//     if (!Array.isArray(o)) {
-//       var a = [];
-//       for (var i in o)
-//         if (Array.isArray(o[i]))
-//           a.push(o[i]);
-//       return a;
-//     }
-//     return o;
-//   }
-//   return obj.reduce((a, b) =>
-//     toArray(a).concat(toArray(b)), []
-//   );
-// }
 
 var defaultSettings = {
 
@@ -53,6 +25,7 @@ var defaultSettings = {
     'TKGeomBase', 'TKBRep', 'TKGeomAlgo', 'TKTopAlgo'
   ],
   depends,
+  cannotParse,
   buildPath: 'build',
   distPath: 'dist',
   wrapperPath: 'src/wrapper',
@@ -76,8 +49,7 @@ function init(file, options) {
   extend(settings, options);
   settings.modules = settings.toolkits
     .map((tkName) => toolkits.find((tk) => tk.name === tkName).modules)
-
-  .reduce((a, b) => a.concat(b))
+    .reduce((a, b) => a.concat(b))
     .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
   console.log(settings.modules)
     //settings.modules = flatten(settings.toolkits)

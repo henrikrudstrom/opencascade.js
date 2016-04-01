@@ -15,7 +15,7 @@ const settings = require('../src/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
 
-const swig = 'swig';
+//const swig = 'swig';
 const flags = '-javascript -node -c++ -DSWIG_TYPE_TABLE=occ.js';
 const otherFlags = '-w302,401,314,509,512 -DCSFDB -DHAVE_CONFIG_H -DOCC_CONVERT_SIGNALS'; // TODO:
 const include = ['-I/usr/include/node', `-I${settings.oce_include}`];
@@ -80,7 +80,7 @@ settings.modules.forEach(function(moduleName) {
     const input = path.join(paths.swigDest, `${moduleName}/module.i`);
     const includes = include.join(' ');
     mkdirp.sync(path.dirname(output));
-    const cmd = `${swig} ${flags} ${otherFlags} ${includes} -o ${output} ${input}`;
+    const cmd = `${settings.swig} ${flags} ${otherFlags} ${includes} -o ${output} ${input}`;
     return run(cmd).exec(done);
   });
 

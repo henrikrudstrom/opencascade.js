@@ -45,7 +45,8 @@ var defaultSettings = {
   depends,
   buildPath: 'build',
   distPath: 'dist',
-  wrapperPath: 'src/wrapper'
+  wrapperPath: 'src/wrapper',
+  swig: 'swig'
 };
 
 function prefixPath(prefix) {

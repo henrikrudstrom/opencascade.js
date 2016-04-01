@@ -33,8 +33,8 @@ gulp.task('copy-user-swig', function(done) {
 gulp.task('parse-dep-types', function(done) {
   var res = {}
   depend.findDependentTypes(['Geom_BSplineCurve', 'Geom_SphericalSurface'], res)
-  console.log("=======================================")
-  console.log(Object.keys(res));
+  //console.log("=======================================")
+  //console.log(Object.keys(res));
 });
 
 
@@ -47,7 +47,7 @@ gulp.task('parse-dependencies', function(done) {
     var deps = {};
     glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
       const mod = path.basename(file).replace('.json', '');
-      console.log(mod)
+      //console.log(mod)
       deps[mod] = depend.readModuleDependencies(mod);
     });
     fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);

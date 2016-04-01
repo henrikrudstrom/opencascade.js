@@ -25,7 +25,7 @@ function configure(moduleName, data, moduleConf) {
       Object.keys(methods).forEach((m) => {
         conf[m] = function() {
           var res = methods[m].apply(null, arguments);
-          //console.log("res", res, arrify(res));
+          ////console.log("res", res, arrify(res));
           // var args = [].slice.call(arguments, 1);
           data[dir.name] = data[dir.name].concat(arrify(res));
         };
@@ -38,7 +38,7 @@ function configure(moduleName, data, moduleConf) {
     moduleConf(moduleName, conf, q);
     return data;
   }
-  console.log(settings.paths.wrapper, process.cwd())
+  //console.log(settings.paths.wrapper, process.cwd())
   var commonConf = require(`${settings.paths.wrapper}/common.js`);
   commonConf(moduleName, conf, q);
 
@@ -65,9 +65,9 @@ function postConfigure(moduleName) {
       var res = dir.module.postConfigure(moduleName, q);
       data[dir.name] = data[dir.name].concat(arrify(res))
     });
-  console.log("=============")
-  //console.log(data)
-  console.log("=============")
+  //console.log("=============")
+  ////console.log(data)
+  //console.log("=============")
   return data;
 }
 

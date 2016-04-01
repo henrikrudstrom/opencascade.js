@@ -10,7 +10,6 @@ function tag(config, name, cls, member) {
     return undefined;
   }
 
-
   var tags = config[name]
     .filter(function(obj) {
       if (obj.parent)
@@ -37,7 +36,7 @@ function initMember(conf, cls, mem) {
 
 function initType(conf, cls) {
   cls.tag = function(name) {
-    //console.log("tyoetag", conf, name);
+    ////console.log("tyoetag", conf, name);
     return tag(conf, name, cls.name);
   };
 
@@ -61,7 +60,7 @@ var moduleCache = {};
 module.exports.loadModule = function loadModule(moduleName, opts) {
   opts = opts || {};
   if (moduleCache.hasOwnProperty(moduleName) && opts.cache){
-    console.log("cahced")
+    //console.log("cahced")
     return moduleCache[moduleName];
   }
   const tree = JSON.parse(fs.readFileSync(`${settings.paths.headerCacheDest}/${moduleName}.json`));
@@ -84,9 +83,9 @@ module.exports.loadModule = function loadModule(moduleName, opts) {
       .reduce((a, b) => a.concat(b));
   }
   tree.include = function(cls) {
-    //console.log("include", cls.name, cls.tag('ignore'));
+    ////console.log("include", cls.name, cls.tag('ignore'));
     if (cls.tag('ignore')) {
-      //console.log("tagged", cls.name, cls.tag('ignore'))
+      ////console.log("tagged", cls.name, cls.tag('ignore'))
       return !cls.tag('ignore').enabled;
     };
 

@@ -14,11 +14,11 @@ describe('build', function() {
     var config = {}
 
     configure('gp', config, function(mod, conf) {
-      //console.log('hmm')
+      ////console.log('hmm')
       conf.ignore('gp_Pnt');
     });
 
-    ////console.log(config);
+    //////console.log(config);
     expect(config.ignore.length).toBe(1);
     expect(config.ignore[0].name).toBe('gp_Pnt');
     var q = query.loadModule('gp', {config});

@@ -10,7 +10,7 @@ describe("module GCE2d", function() {
     var value = line.value()
 
     expect(typeof value).toBe("object")
-    //console.log(value.constructor.name)
+    ////console.log(value.constructor.name)
     expect(value.constructor.name).not.toBe("SwigProxy")
 
     //expect(geomP.constructor.name).toBe("Point2d")

@@ -7,12 +7,12 @@ const yargs = require('yargs');
 const settings = require('./src/settings.js');
 const test = require('./tasks/test.js');
 
-console.log(settings.modules)
+//console.log(settings.modules)
 gulp.task('test-gen', function() {
   gulp.src('spec/querySpec.js')
     .pipe(jasmine({ reporter: test.reporter }))
     .on('error', function(e) {
-      //console.log(e.err.stack);
+      ////console.log(e.err.stack);
     });
 });
 

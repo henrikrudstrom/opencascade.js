@@ -9,8 +9,8 @@ const runSequence = require('run-sequence');
 const run = require('gulp-run');
 const gutil = require('gulp-util');
 
-const render = require('../src/render.js');
-
+const render = require('../src/renderSwig.js');
+const configure = require('../src/configure.js');
 const settings = require('../src/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
@@ -30,31 +30,9 @@ gulp.task('copy-user-swig', function(done) {
   });
 });
 
-// // Read dependencies from cached pygccxml output TODO: make it a module task
-// gulp.task('parse-dependencies', function(done) {
-//   const depFile = 'config/depends.json';
-//
-//   return run(`rm -rf ${depFile}`).exec((error) => {
-//     if (error) return done(error);
-//     var deps = {};
-//     glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
-//       const tree = loadTree(file);
-//       const mod = path.basename(file).replace('.json', '');
-//       deps[mod] = tree.readDependencies(mod);
-//     });
-//     fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
-//   });
-// });
-//
-// gulp.task('parse-all-headers', function(done) {
-//   common.limitExecution('parse-headers', settings.modules, done);
-// });
-
-
 settings.modules.forEach(function(moduleName) {
-  const treePath = `${paths.headerCacheDest}/${moduleName}.json`;
   const configPath = `${paths.configDest}/${moduleName}.json`;
-  var depends = settings.depends[moduleName];
+  var depends = settings.depends[moduleName] || [];
 
 
   function mTask(name, mName) {
@@ -64,22 +42,19 @@ settings.modules.forEach(function(moduleName) {
   }
 
   gulp.task(mTask('swig-configure'), [mTask('parse')], function(done) {
-    run(`rm -f ${configPath}`).exec(function(error) {
+    run(`rm -f ${configPath}`).exec((error) => {
       if (error) return done(error);
-
-      var configure = require('../src/configure.js');
       var data = configure(moduleName);
-
-      mkdirp.sync('build/config/');
-      var src = JSON.stringify(data, null, 2);
-      fs.writeFileSync(configPath, src);
-      data = configure.post(moduleName);
-      src = JSON.stringify(data, null, 2);
-      fs.writeFileSync(configPath, src);
-      done();
+      common.writeJSON(configPath, data);
+      return done();
     });
   });
 
+  gulp.task(mTask('swig-post-configure'), mTask('swig-render-deps', depends), function(done) {
+    var data = configure.post(moduleName);
+    common.writeJSON(configPath, data);
+    return done()
+  });
 
   function renderSwig(done) {
     run(`rm -rf ${paths.swigDest}/${moduleName}`).exec(function(error) {
@@ -89,7 +64,7 @@ settings.modules.forEach(function(moduleName) {
     });
   }
 
-  gulp.task(mTask('swig-render'), [mTask('swig-configure'), 'copy-user-swig'],
+  gulp.task(mTask('swig-render'), [mTask('swig-post-configure'), 'copy-user-swig'],
     function(done) {
       renderSwig(done);
     });

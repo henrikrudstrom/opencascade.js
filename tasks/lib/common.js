@@ -2,6 +2,7 @@
 var runSequence = require('run-sequence');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var path = require('path');
 var hashFiles = require('hash-files');
 var settings = require('../../src/settings.js');
 
@@ -13,6 +14,17 @@ function moduleTask(name, mName) {
     return name.map((n) => moduleTask(n, mName));
   }
   return name + ':' + mName;
+}
+
+module.exports.writeJSON = function(dest, data, done) {
+  mkdirp.sync(path.dirname(dest));
+  var src = JSON.stringify(data, null, 2);
+  if (typeof done !== 'function'){
+    //console.log("Sync", dest)
+    return fs.writeFileSync(dest, src);
+  }
+  //console.log("ASync", dest)
+  return fs.writeFile(dest, src, done);
 }
 
 module.exports.moduleTask = moduleTask;

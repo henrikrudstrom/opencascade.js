@@ -1,4 +1,5 @@
 const query = require('./query.js');
+const settings = require('./settings.js');
 
 function pass() {
   return true;
@@ -17,7 +18,7 @@ function filterTypeName(ret) {
 }
 
 function memberDepends(mem) {
-  //console.log("mem", mem);
+  ////console.log("mem", mem);
   return [mem.returnType]
     .concat(mem.arguments.map((a) => a.type))
     .map(filterTypeName)
@@ -27,8 +28,8 @@ function memberDepends(mem) {
 
 
 function classDepends(cls, noFilter) {
-  //console.log(cls)
-  //console.log("cls", cls)
+  ////console.log(cls)
+  ////console.log("cls", cls)
   return [cls.name]
     //.concat(cls.bases.map(classDepends))
     .concat(cls.members
@@ -44,8 +45,8 @@ function classDepends(cls, noFilter) {
 
 function moduleDepends(moduleName, noFilter) {
   const q = query.loadModule(moduleName);
-  //console.log(q.classes)
-  //console.log('q.classes')
+  ////console.log(q.classes)
+  ////console.log('q.classes')
   return q.classes
     //.filter(noFilter ? pass : q.include)
     .map(classDepends)
@@ -53,7 +54,7 @@ function moduleDepends(moduleName, noFilter) {
 }
 
 
-module.exports.readModuleDependencies = function(moduleName) {
+function readModuleDependencies(moduleName) {
   return moduleDepends(moduleName, true)
     .map((name) => {
       var res = name.match(/(\w+?)_\w+/);
@@ -69,6 +70,7 @@ module.exports.readModuleDependencies = function(moduleName) {
       return false;
     });
 };
+module.exports.readModuleDependencies = readModuleDependencies
 module.exports.memberDepends = memberDepends;
 module.exports.classDepends = classDepends;
 module.exports.moduleDepends = moduleDepends;
@@ -95,6 +97,30 @@ module.exports.findDependentTypes = function findDependentTypes(types, config, r
   return res;
 }
 
+
+// function toolkitDeps(moduleName) {
+//   var modules = settings.depends[moduleName].concat([moduleName]);
+//   var toolkits = settings.toolkits.map(getToolkit);
+//   //console.log(toolkits)
+//   return toolkits
+//     .filter((m, index) => toolkits.indexOf(m) === index)
+//     .map((s) => `      "-l${s}"`).join(',\n');
+// }
+//
+var fs = require('fs');
+const toolkits = JSON.parse(fs.readFileSync('config/toolkits.json'));
+module.exports.toolkitDepends = function(moduleName) {
+  var modules = readModuleDependencies(moduleName).concat([moduleName]);
+  //console.log("MODS", modules)
+  var res = Object.keys(toolkits).filter((tk) => {
+    //console.log("TK", tk)
+    return toolkits[tk].some(
+      (m1) => modules.some((m2) => m1 === m2)
+    );
+  });
+  //console.log("res", res)
+  return res;
+};
 
 //
 // module.exports.readDependencies = function(moduleName) {

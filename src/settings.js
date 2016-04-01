@@ -10,55 +10,70 @@ function readConfig(name) {
 }
 const toolkits = readConfig('toolkits.json');
 const cannotParse = readConfig('cannot-parse.json');
-const depends = readConfig('depends.json');
+var depends = readConfig('depends.json');
+Object.keys(depends).forEach(function(d) {
+  console.log(depends[d])
+  var deps = depends[d];
+  console.log("dep", deps, typeof deps)
+  depends[d] = deps.filter(cannotParse.some);
+});
 
-function flatten(obj) {
-  function toArray(o) {
-    if (typeof o === 'string')
-      return [o];
-    if (!Array.isArray(o)) {
-      var a = [];
-      for (var i in o)
-        if (Array.isArray(o[i]))
-          a.push(o[i]);
-      return a;
-    }
-    return o;
-  }
-  return obj.reduce((a, b) =>
-    toArray(a).concat(toArray(b)), []
-  );
-}
+// function flatten(obj) {
+//   function toArray(o) {
+//     if (typeof o === 'string')
+//       return [o];
+//     if (!Array.isArray(o)) {
+//       var a = [];
+//       for (var i in o)
+//         if (Array.isArray(o[i]))
+//           a.push(o[i]);
+//       return a;
+//     }
+//     return o;
+//   }
+//   return obj.reduce((a, b) =>
+//     toArray(a).concat(toArray(b)), []
+//   );
+// }
 
 var defaultSettings = {
-  oce_include: '/home/henrik/OCE/include/oce',
-  oce_lib: '/home/henrik/OCE/lib',
+
   force: argv.force,
-  toolkits: [toolkits.TKG3d, toolkits.TKernel, toolkits.TKMath, toolkits.TKAdvTools],
+  toolkits: ['TKG3d', 'TKernel', 'TKMath', 'TKAdvTools',
+    'TKGeomBase', 'TKBRep', 'TKGeomAlgo', 'TKTopAlgo'
+  ],
   depends,
   buildPath: 'build',
   distPath: 'dist',
   wrapperPath: 'src/wrapper'
 };
-function prefixPath(prefix){
-  return function(p){
+
+function prefixPath(prefix) {
+  return function(p) {
     return path.join(prefix, p);
   }
 }
 // initialize paths and modules
 function init(file, options) {
-  file = file || "config.json";
+  //console.log(file)
+  file = file || 'settings.json';
   options = options || {};
   var settings = {};
   extend(settings, defaultSettings);
   if (fs.existsSync(file))
     extend(settings, JSON.parse(fs.readFileSync(file)));
   extend(settings, options);
+  settings.modules = settings.toolkits
+    .map((tkName) => toolkits.find((tk) => tk.name === tkName).modules)
 
-  settings.modules = flatten(settings.toolkits)
+  .reduce((a, b) => a.concat(b))
     .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
-  // settings.data.depends = fs.existsSync('config/depends.json') ?
-  //   JSON.parse(fs.readFileSync('config/depends.json')) : {};
+  console.log(settings.modules)
+    //settings.modules = flatten(settings.toolkits)
+    //  .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
+  console.log(settings.modules)
+    // settings.data.depends = fs.existsSync('config/depends.json') ?
+    //   JSON.parse(fs.readFileSync('config/depends.json')) : {};
   const buildPath = settings.buildPath;
   var prefix = prefixPath(process.cwd());
   settings.paths = {

@@ -16,19 +16,21 @@ module.exports.configure = {
   //     .map((t) => {
   //       return { name: t, enabled: false };
   //     });
-  //   console.log("inc deps", res);
+  //   //console.log("inc deps", res);
   //   return res;
   // }
   // includeWithDependencies(conf, name, parent) {
-  //   console.log("include for", name)
+  //   //console.log("include for", name)
   //   Object.keys(depend.findDependentTypes([name])).forEach((t) => {
-  //     console.log("inclide", t)
+  //     //console.log("inclide", t)
   //     conf.include(t);
   //   });
-  //   console.log("included")
+  //   //console.log("included")
   // }
 };
 module.exports.postConfigure = function(moduleName, q) {
+  //console.log(q.config)
+  //console.log(moduleName)
   return q.config.ignore
     .filter((obj) => obj.deps)
     .map((obj) => Object.keys(depend.findDependentTypes([obj.name])))

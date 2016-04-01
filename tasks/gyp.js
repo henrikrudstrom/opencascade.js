@@ -8,6 +8,7 @@ const run = require('gulp-run');
 const gutil = require('gulp-util');
 
 const settings = require('../src/settings.js');
+const depend = require('../src/depend.js');
 const paths = settings.paths;
 const common = require('./lib/common.js');
 
@@ -18,14 +19,22 @@ function getToolkit(moduleName) {
 }
 
 function toolkitDeps(moduleName) {
-  var modules = settings.depends[moduleName].concat([moduleName]);
-  var toolkits = modules.map(getToolkit);
-  return toolkits
-    .filter((m, index) => toolkits.indexOf(m) === index)
+  return depend.toolkitDepends(moduleName)
     .map((s) => `      "-l${s}"`).join(',\n');
+  //console.log("TTOOOOOOOOL");
+  //console.log(res)
+  // var modules = settings.depends[moduleName].concat([moduleName]);
+  // var toolkits = settings.toolkits.map(getToolkit);
+  // //console.log(toolkits)
+  // return toolkits
+  //   .filter((m, index) => toolkits.indexOf(m) === index)
+  //   .map((s) => `      "-l${s}"`).join(',\n');
 }
+module.exports.tool = toolkitDeps;
 
 function writeConfig(moduleName, buildPath) {
+  //console.log("configure")
+  //console.log(toolkitDeps(moduleName))
   var src = `{
   "targets": [{
     "target_name":"${moduleName}",
@@ -51,6 +60,9 @@ ${toolkitDeps(moduleName)}
 
 settings.modules.forEach(function(moduleName) {
   const buildPath = `${paths.gyp}/${moduleName}`;
+  const configPath = `${paths.configDest}/${moduleName}.json`;
+  var depends = settings.depends[moduleName];
+
 
   function mTask(name, mName) {
     if (mName === undefined)
@@ -69,14 +81,14 @@ settings.modules.forEach(function(moduleName) {
     writeConfig(moduleName, buildPath);
     run('node-gyp configure', {
       cwd: buildPath,
-      verbosity: 2
+      verbosity: 0
     }).exec(done);
   });
 
   gulp.task(mTask('gyp-build'), [mTask('gyp-configure'), mTask('swig')], function(done) {
     run('node-gyp build', {
       cwd: buildPath,
-      verbosity: 2
+      verbosity: 1
     }).exec(done);
   });
 
@@ -88,5 +100,9 @@ settings.modules.forEach(function(moduleName) {
 
   gulp.task(mTask('gyp'), function(done) {
     runSequence(mTask('gyp-build'), mTask('gyp-dist'), done);
+  });
+
+  gulp.task(mTask('gyp-deps'), function(done) {
+    common.limitExecution('gyp', depends, done);
   });
 });

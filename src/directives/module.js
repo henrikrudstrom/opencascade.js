@@ -15,6 +15,7 @@ function renderEnum(en) {
 }
 
 module.exports.renderSwig = function(moduleName, config, q) {
+  console.log(moduleName)
   const depends = settings.depends[moduleName];
   const dependantModules = depends.map(function(dep) {
     return `%import "build/swig/gen/${dep}/module.i";`;

@@ -57,6 +57,9 @@ gulp.task('parse-dependencies', function(done) {
 gulp.task('parse-all-headers', function(done) {
   common.limitExecution('parse-headers', settings.modules, done);
 });
+gulp.task('parse', function(done) {
+  runSequence('parse-all-headers', 'parse-dependencies', done)
+});
 
 
 settings.modules.forEach(function(moduleName) {

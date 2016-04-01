@@ -32,9 +32,9 @@ gulp.task('copy-user-swig', function(done) {
 // Read dependencies from cached pygccxml output TODO: make it a module task
 gulp.task('parse-dep-types', function(done) {
   var res = {}
-  depend.findDependentTypes(['Geom_BSplineCurve', 'Geom_SphericalSurface'], res)
-  //console.log("=======================================")
-  //console.log(Object.keys(res));
+  depend.findDependentTypes(['BRepBuilderAPI_MakeFace'], res)
+  console.log("=======================================")
+  console.log(Object.keys(res));
 });
 
 
@@ -45,10 +45,10 @@ gulp.task('parse-dependencies', function(done) {
   return run(`rm -rf ${depFile}`).exec((error) => {
     if (error) return done(error);
     var deps = {};
+    var reader = depend.reader();
     glob.sync(`${paths.headerCacheDest}/*.json`).forEach((file) => {
       const mod = path.basename(file).replace('.json', '');
-      //console.log(mod)
-      deps[mod] = depend.readModuleDependencies(mod);
+      deps[mod] = reader.requiredModules(mod, false);
     });
     fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
   });

@@ -20,13 +20,15 @@ def parse_files(path, files):
     #generator_path, generator_name = utils.find_xml_generator()
     #print("GENER " + generator_path)
     # Configure the xml generator
-    
+
     args = {
         'include_paths':[path],
         'keep_xml': True
         }
     if(xml_generator != None):
         args['xml_generator'] =xml_generator
+    if(xml_generator_path != None):
+        args['xml_generator_path'] =xml_generator_path
 
     xml_generator_config = parser.xml_generator_configuration_t(**args)
 

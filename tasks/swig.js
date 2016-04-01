@@ -12,6 +12,7 @@ const gutil = require('gulp-util');
 const render = require('../src/renderSwig.js');
 const configure = require('../src/configure.js');
 const settings = require('../src/settings.js');
+const depend = require('../src/depend.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
 
@@ -28,6 +29,28 @@ gulp.task('copy-user-swig', function(done) {
     mkdirp.sync(paths.userSwigDest);
     return run(`cp -r ${paths.userSwigSrc}/* ${paths.userSwigDest}`).exec(done);
   });
+});
+
+
+// Read dependencies from cached pygccxml output TODO: make it a module task
+gulp.task('parse-wrap-dependencies', function(done) {
+  const depFile = `${settings.paths.build}/config/depends.json`;
+
+  return run(`rm -rf ${depFile}`).exec((error) => {
+    if (error) return done(error);
+    var deps = {};
+    var reader = depend.reader();
+    glob.sync(`src/wrapper/modules/*.js`).forEach((file) => {
+      const mod = path.basename(file).replace('.js', '');
+      deps[mod] = reader.requiredModules(mod, true);
+    });
+    fs.writeFile(depFile, JSON.stringify(deps, null, 2), done);
+  });
+});
+
+gulp.task('swig-include-missing', function(done){
+  configure.configureMissing();
+  done();
 });
 
 settings.modules.forEach(function(moduleName) {
@@ -50,11 +73,13 @@ settings.modules.forEach(function(moduleName) {
     });
   });
 
-  gulp.task(mTask('swig-post-configure'), mTask('swig-render-deps', depends), function(done) {
-    var data = configure.post(moduleName);
-    common.writeJSON(configPath, data);
-    return done()
-  });
+
+
+  // gulp.task(mTask('swig-post-configure'), mTask('swig-render-deps', depends), function(done) {
+  //   var data = configure.post(moduleName);
+  //   common.writeJSON(configPath, data);
+  //   return done()
+  // });
 
   function renderSwig(done) {
     run(`rm -rf ${paths.swigDest}/${moduleName}`).exec(function(error) {
@@ -64,7 +89,7 @@ settings.modules.forEach(function(moduleName) {
     });
   }
 
-  gulp.task(mTask('swig-render'), [mTask('swig-post-configure'), 'copy-user-swig'],
+  gulp.task(mTask('swig-render'),
     function(done) {
       renderSwig(done);
     });
@@ -85,7 +110,15 @@ settings.modules.forEach(function(moduleName) {
   });
 
 
-  gulp.task(mTask('swig'), [mTask('swig-render-deps'), mTask('swig-render')], function(done) {
-    return runSequence(mTask('swig-only'), done);
+
+
+
+  gulp.task(mTask('swig'), function(done) {
+    var confTasks = mTask('swig-configure', [moduleName].concat(depends));
+    var renderTasks = mTask('swig-configure', [moduleName].concat(depends));
+    return runSequence(confTasks, 'swig-include-missing', 'copy-user-swig', renderTasks, mTask('swig-only'), done);
   });
+  // gulp.task(mTask('swig'), [mTask('swig-render-deps'), mTask('swig-render')], function(done) {
+  //   return runSequence(mTask('swig-only'), done);
+  // });
 });

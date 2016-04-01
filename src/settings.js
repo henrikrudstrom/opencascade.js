@@ -5,12 +5,14 @@ const extend = require('extend');
 
 
 
-function readConfig(name) {
-  return JSON.parse(fs.readFileSync(`config/${name}`));
+function readConfig(name, def) {
+  var file = `config/${name}`
+  if (!fs.existsSync(file)) return def;
+  return JSON.parse(fs.readFileSync(file));
 }
-const toolkits = readConfig('toolkits.json');
-const cannotParse = readConfig('cannot-parse.json');
-var depends = readConfig('depends.json');
+const toolkits = readConfig('toolkits.json', []);
+const cannotParse = readConfig('cannot-parse.json', {});
+var depends = readConfig('depends.json', {});
 // remove dependencies that are excluded
 Object.keys(depends).forEach(function(d) {
   var deps = depends[d];
@@ -21,7 +23,7 @@ Object.keys(depends).forEach(function(d) {
 var defaultSettings = {
 
   force: argv.force,
-  toolkits: ['TKG3d', 'TKernel', 'TKMath', 'TKAdvTools',
+  toolkits: ['TKG3d','TKG2d', 'TKernel', 'TKMath', 'TKAdvTools',
     'TKGeomBase', 'TKBRep', 'TKGeomAlgo', 'TKTopAlgo'
   ],
   depends,
@@ -51,10 +53,9 @@ function init(file, options) {
     .map((tkName) => toolkits.find((tk) => tk.name === tkName).modules)
     .reduce((a, b) => a.concat(b))
     .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
-  console.log(settings.modules)
     //settings.modules = flatten(settings.toolkits)
     //  .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
-  console.log(settings.modules)
+
     // settings.data.depends = fs.existsSync('config/depends.json') ?
     //   JSON.parse(fs.readFileSync('config/depends.json')) : {};
   const buildPath = settings.buildPath;
@@ -77,6 +78,7 @@ function init(file, options) {
 
 module.exports = init()
 module.exports.init = init
+
 
 
 // process.env['LD_LIBRARY_PATH'] = settings.oce_lib;

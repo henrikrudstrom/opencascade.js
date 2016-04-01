@@ -1,5 +1,7 @@
 {
-  "oce_include": "/usr/local/include/oce",
-  "oce_lib": "/usr/local/lib",
-  "xml_generator": "gccxml"
+  "oce_include": "/home/henrik/OCE/include/oce",
+  "oce_lib": "/home/henrik/OCE/lib",
+  "xml_generator": "castxml",
+  "xml_generator_path": "/usr/bin/castxml"
+
 }

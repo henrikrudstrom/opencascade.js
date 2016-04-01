@@ -74,7 +74,7 @@ settings.modules.forEach(function(moduleName) {
       return done();
     }
     mkdirp.sync(paths.headerCacheDest);
-    return run(`python tasks/python/parse_headers.py ${moduleName} ${treePath}`).exec(done);
+    return run(`python tasks/python/parse_headers.py ${moduleName} ${settings.oce_include} ${treePath}`).exec(done);
   });
 
   gulp.task(mTask('parse'), function(done) {

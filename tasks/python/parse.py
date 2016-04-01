@@ -5,18 +5,31 @@ import os, json
 from glob import glob
 
 
+settings_path = 'settings.json'
+xml_generator_path=None
+xml_generator=None
+if os.path.exists(settings_path):
+    with open(settings_path, 'r') as f:
+        settings = json.loads(f.read())
+        xml_generator = settings.get('xml_generator')
+        xml_generator_path = settings.get('xml_generator_path')
+
+
 def parse_files(path, files):
     # Find the location of the xml generator (castxml or gccxml)
     #generator_path, generator_name = utils.find_xml_generator()
     #print("GENER " + generator_path)
     # Configure the xml generator
-    xml_generator_config = parser.xml_generator_configuration_t(
-        xml_generator_path="/usr/bin/castxml",
-        xml_generator="castxml",
-        include_paths=[path],
-        define_symbols=[],
-        keep_xml = True
-    )
+    
+    args = {
+        'include_paths':[path],
+        'keep_xml': True
+        }
+    if(xml_generator != None):
+        args['xml_generator'] =xml_generator
+
+    xml_generator_config = parser.xml_generator_configuration_t(**args)
+
     def cache_file(filename):
         return parser.file_configuration_t(
             data=filename,

@@ -7,7 +7,7 @@ import sys
 from pygccxml import declarations
 from collections import OrderedDict
 
-oce_include = "/home/henrik/OCE/include/oce"
+#oce_include = "/home/henrik/OCE/include/oce"
 
 from collections import OrderedDict
 import json
@@ -200,8 +200,10 @@ def wrapped_classes(module):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         module_name = sys.argv[1]
-    if len(sys.argv) >2:
-        output_path = sys.argv[2]
+    if len(sys.argv) > 2:
+        oce_include = sys.argv[2]
+    if len(sys.argv) > 3:
+        output_path = sys.argv[3]
     else:
         exit(1)
     module = Module(module_name, "")

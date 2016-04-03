@@ -9,3 +9,10 @@ module.exports.renderSwig = function(moduleName, config, q) {
     .map((name) => `%rename("${camelCase(name)}") ${name};`)
     .join('\n');
 };
+
+module.exports.process = function(obj) {
+  if (obj.cls !== 'member') return obj;
+  obj.oldName = obj.name;
+  obj.name = camelCase(name);
+  return name;
+};

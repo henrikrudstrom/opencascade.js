@@ -1,6 +1,3 @@
-const depend = require('./src/depend.js');
+const depend = require('./src/settings.js');
 const yargs = require('yargs');
-console.log();
-var reader = depend.reader();
-var res = reader.missingClasses(yargs.argv._)
-console.log(res)
+console.log(depend.buildModules);

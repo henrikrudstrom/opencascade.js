@@ -22,17 +22,21 @@
   ],
   "AdvApp2Var": [
     "Standard",
+    "TCollection",
     "TColgp",
     "TColStd",
     "GeomAbs",
     "gp",
     "Geom",
-    "TCollection"
+    "AdvApprox",
+    "PLib"
   ],
   "AdvApprox": [
     "Standard",
     "TColStd",
     "TColgp",
+    "GeomAbs",
+    "PLib",
     "TCollection",
     "gp"
   ],
@@ -52,16 +56,16 @@
   ],
   "Approx": [
     "Standard",
+    "AppCont",
     "gp",
     "Geom",
     "Geom2d",
-    "AppCont",
+    "Adaptor3d",
+    "GeomAbs",
+    "Adaptor2d",
     "TColgp",
     "TColStd",
-    "GeomAbs",
-    "Adaptor3d",
     "TCollection",
-    "Adaptor2d",
     "TopAbs"
   ],
   "ApproxInt": [
@@ -82,9 +86,9 @@
   ],
   "Bnd": [
     "Standard",
+    "TCollection",
     "gp",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "BndLib": [
     "Adaptor3d",
@@ -105,13 +109,13 @@
     "Geom",
     "TopLoc",
     "Geom2d",
+    "TCollection",
     "gp",
     "TopoDS",
     "Poly",
     "GeomAbs",
     "TColStd",
     "TColgp",
-    "TCollection",
     "TopAbs",
     "TShort"
   ],
@@ -129,8 +133,8 @@
     "IntImp",
     "Geom2d",
     "AppCont",
-    "TCollection",
     "Adaptor2d",
+    "TCollection",
     "TopAbs"
   ],
   "BRepBndLib": [],
@@ -149,16 +153,19 @@
     "TopAbs",
     "TopLoc",
     "GeomAbs",
-    "TColgp"
+    "TColgp",
+    "BRep",
+    "Poly",
+    "TShort"
   ],
   "BRepCheck": [
     "TopoDS",
     "Standard",
     "TopTools",
+    "TCollection",
     "TopAbs",
     "TopLoc",
     "gp",
-    "TCollection",
     "TColStd",
     "Message"
   ],
@@ -175,13 +182,13 @@
   "BRepClass3d": [
     "TopoDS",
     "Standard",
+    "TCollection",
     "gp",
     "TopAbs",
     "Bnd",
     "IntCurvesFace",
     "IntCurveSurface",
     "TopLoc",
-    "TCollection",
     "TColStd",
     "Adaptor3d",
     "GeomAbs",
@@ -189,6 +196,7 @@
     "Adaptor2d",
     "Geom2d",
     "TColgp",
+    "IntSurf",
     "Intf"
   ],
   "BRepExtrema": [
@@ -196,6 +204,7 @@
     "gp",
     "TopoDS",
     "Extrema",
+    "Bnd",
     "TColStd",
     "TCollection",
     "TopAbs",
@@ -235,6 +244,7 @@
     "Adaptor2d",
     "Geom2d",
     "TColgp",
+    "IntSurf",
     "Bnd",
     "Intf"
   ],
@@ -262,6 +272,7 @@
   "BRepMAT2d": [
     "TopoDS",
     "Standard",
+    "TCollection",
     "MAT",
     "Geom2d",
     "TColGeom2d",
@@ -270,7 +281,6 @@
     "Bisector",
     "TopAbs",
     "TopLoc",
-    "TCollection",
     "GeomAbs",
     "TColgp",
     "IntRes2d"
@@ -285,20 +295,23 @@
     "Geom2d",
     "GeomAbs",
     "TColgp",
-    "TopAbs",
     "TCollection",
+    "TopAbs",
+    "BRep",
     "TColStd",
-    "Message"
+    "Message",
+    "Poly",
+    "TShort"
   ],
   "BRepTopAdaptor": [
     "TopoDS",
     "Standard",
+    "TCollection",
     "Adaptor3d",
     "Adaptor2d",
     "TopAbs",
     "gp",
     "TopLoc",
-    "TCollection",
     "TColStd",
     "GeomAbs",
     "Geom",
@@ -329,8 +342,9 @@
   ],
   "CSLib": [
     "Standard",
-    "gp",
     "TColStd",
+    "gp",
+    "TColgp",
     "TCollection"
   ],
   "Dico": [
@@ -357,6 +371,7 @@
   "Extrema": [
     "gp",
     "Standard",
+    "TCollection",
     "Adaptor2d",
     "GeomAbs",
     "TColStd",
@@ -364,29 +379,29 @@
     "TColgp",
     "Adaptor3d",
     "Geom",
-    "TCollection",
     "TopAbs"
   ],
   "FairCurve": [
     "Standard",
+    "TColStd",
     "TColgp",
     "gp",
     "Geom2d",
-    "TColStd",
     "TCollection",
     "GeomAbs"
   ],
   "FEmTool": [
     "TColStd",
     "Standard",
-    "PLib",
-    "TCollection"
+    "TCollection",
+    "GeomAbs",
+    "PLib"
   ],
   "GC": [
     "Geom",
+    "gp",
     "Standard",
     "gce",
-    "gp",
     "GeomAbs",
     "TColStd",
     "TColgp",
@@ -424,9 +439,9 @@
   ],
   "GCE2d": [
     "Geom2d",
+    "gp",
     "Standard",
     "gce",
-    "gp",
     "GeomAbs",
     "TColgp",
     "TColStd",
@@ -495,10 +510,11 @@
   "Geom2dConvert": [
     "Geom2d",
     "Standard",
+    "GeomAbs",
     "TColGeom2d",
     "TColStd",
+    "Convert",
     "gp",
-    "GeomAbs",
     "TColgp",
     "TCollection"
   ],
@@ -521,6 +537,7 @@
   ],
   "Geom2dHatch": [
     "Standard",
+    "TCollection",
     "Geom2dAdaptor",
     "HatchGen",
     "gp",
@@ -530,12 +547,12 @@
     "GeomAbs",
     "TColStd",
     "Adaptor2d",
-    "TColgp",
-    "TCollection"
+    "TColgp"
   ],
   "Geom2dInt": [
     "Extrema",
     "Standard",
+    "TCollection",
     "GeomAbs",
     "Adaptor2d",
     "gp",
@@ -547,7 +564,6 @@
     "TColgp",
     "Adaptor3d",
     "Geom",
-    "TCollection",
     "TopAbs"
   ],
   "Geom2dLProp": [
@@ -597,8 +613,9 @@
     "TColGeom",
     "TColStd",
     "TColgp",
-    "gp",
     "GeomAbs",
+    "Convert",
+    "gp",
     "TCollection"
   ],
   "GeomFill": [
@@ -611,9 +628,9 @@
     "Adaptor3d",
     "Law",
     "Approx",
+    "TCollection",
     "Geom2d",
     "TColGeom",
-    "TCollection",
     "Adaptor2d",
     "TopAbs",
     "AppCont"
@@ -621,12 +638,14 @@
   "GeomLib": [
     "Standard",
     "Geom",
+    "TColgp",
+    "TColStd",
     "gp",
     "Geom2d",
+    "AdvApprox",
     "GeomAbs",
-    "TColStd",
-    "TColgp",
-    "TCollection"
+    "TCollection",
+    "PLib"
   ],
   "GeomLProp": [
     "Geom",
@@ -645,14 +664,17 @@
     "gp",
     "Geom2d",
     "Adaptor2d",
+    "TCollection",
     "TColStd",
     "Geom",
     "TColgp",
     "AdvApp2Var",
     "GeomAbs",
+    "Plate",
     "TColGeom2d",
     "TopAbs",
-    "TCollection"
+    "AdvApprox",
+    "PLib"
   ],
   "GeomProjLib": [],
   "GeomTools": [
@@ -679,29 +701,34 @@
     "TCollection"
   ],
   "GraphDS": [
-    "Standard"
+    "Standard",
+    "TCollection"
   ],
   "GraphTools": [
     "Standard",
-    "TColStd",
-    "TCollection"
+    "TCollection",
+    "TColStd"
   ],
   "Hatch": [
     "Standard",
+    "TCollection",
     "gp",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "HatchGen": [
     "Standard",
-    "TopAbs"
+    "TCollection",
+    "IntRes2d",
+    "TopAbs",
+    "gp",
+    "TColStd"
   ],
   "Hermit": [],
   "IntAna": [
     "Standard",
+    "TCollection",
     "gp",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "IntAna2d": [
     "Standard",
@@ -733,6 +760,7 @@
     "Adaptor2d",
     "Geom2d",
     "TColgp",
+    "IntSurf",
     "Intf"
   ],
   "IntCurveSurface": [
@@ -742,20 +770,21 @@
     "TColStd",
     "gp",
     "Geom",
+    "IntSurf",
+    "TCollection",
     "Bnd",
     "Intf",
     "Adaptor2d",
     "TopAbs",
     "Geom2d",
-    "TCollection",
     "TColgp"
   ],
   "Intf": [
     "Standard",
+    "TCollection",
     "gp",
     "Bnd",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "IntImp": [],
   "IntImpParGen": [],
@@ -763,6 +792,7 @@
     "Standard",
     "Adaptor3d",
     "Bnd",
+    "TCollection",
     "TColStd",
     "GeomAbs",
     "gp",
@@ -770,14 +800,13 @@
     "Adaptor2d",
     "TopAbs",
     "Geom2d",
-    "TCollection",
     "TColgp"
   ],
   "IntRes2d": [
     "Standard",
+    "TCollection",
     "gp",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "IntStart": [
     "TopAbs",
@@ -790,8 +819,8 @@
     "Standard",
     "gp",
     "GeomAbs",
-    "TColStd",
-    "TCollection"
+    "TCollection",
+    "TColStd"
   ],
   "Law": [
     "GeomAbs",
@@ -806,6 +835,7 @@
     "GeomAbs",
     "Standard",
     "Geom",
+    "Geom2d",
     "gp",
     "TColStd",
     "TColgp",
@@ -813,7 +843,8 @@
   ],
   "LProp": [
     "Standard",
-    "GeomAbs"
+    "GeomAbs",
+    "TCollection"
   ],
   "LProp3d": [
     "Adaptor3d",
@@ -829,7 +860,8 @@
     "TColgp"
   ],
   "MAT": [
-    "Standard"
+    "Standard",
+    "TCollection"
   ],
   "MAT2d": [
     "MAT",
@@ -837,11 +869,11 @@
     "Bisector",
     "Geom2d",
     "gp",
+    "TCollection",
     "TColGeom2d",
     "TColStd",
     "GeomAbs",
     "IntRes2d",
-    "TCollection",
     "TColgp"
   ],
   "Materials": [
@@ -862,20 +894,23 @@
     "Standard",
     "gp",
     "Plate",
-    "TColStd",
     "TCollection",
-    "TColgp"
+    "Geom",
+    "TColStd",
+    "TColgp",
+    "GeomAbs"
   ],
   "Plate": [
     "Standard",
     "gp",
+    "TCollection",
     "TColStd",
-    "TColgp",
-    "TCollection"
+    "TColgp"
   ],
   "PLib": [
     "Standard",
     "TColStd",
+    "GeomAbs",
     "TCollection"
   ],
   "Poly": [
@@ -895,9 +930,9 @@
     "gp",
     "GeomAbs",
     "TColgp",
+    "TCollection",
     "TColStd",
     "Geom",
-    "TCollection",
     "TopAbs"
   ],
   "Quantity": [
@@ -918,26 +953,26 @@
   "TColGeom": [
     "Geom",
     "Standard",
+    "TCollection",
     "gp",
     "GeomAbs",
     "TColStd",
-    "TColgp",
-    "TCollection"
+    "TColgp"
   ],
   "TColGeom2d": [
     "Geom2d",
     "Standard",
+    "TCollection",
     "gp",
     "GeomAbs",
     "TColgp",
-    "TColStd",
-    "TCollection"
+    "TColStd"
   ],
   "TColgp": [
     "Standard",
     "gp",
-    "TColStd",
-    "TCollection"
+    "TCollection",
+    "TColStd"
   ],
   "TCollection": [
     "Standard"
@@ -959,6 +994,7 @@
     "Adaptor3d",
     "GeomAbs",
     "Geom",
+    "IntSurf",
     "Bnd",
     "Intf",
     "Adaptor2d",
@@ -968,10 +1004,10 @@
   "TopExp": [
     "TopoDS",
     "Standard",
+    "TCollection",
     "TopAbs",
     "TopLoc",
     "gp",
-    "TCollection",
     "TColStd"
   ],
   "TopLoc": [
@@ -984,8 +1020,8 @@
     "Standard",
     "TopAbs",
     "TopLoc",
-    "gp",
     "TCollection",
+    "gp",
     "TColStd"
   ],
   "TopTools": [
@@ -1006,7 +1042,8 @@
     "TCollection"
   ],
   "TShort": [
-    "Standard"
+    "Standard",
+    "TCollection"
   ],
   "Units": [
     "Standard",

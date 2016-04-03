@@ -1,8 +1,8 @@
-const argv = require('yargs').argv;
+const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const extend = require('extend');
-
+const glob = require('glob');
 
 
 function readConfig(name, def) {
@@ -19,11 +19,15 @@ Object.keys(depends).forEach(function(d) {
   depends[d] = depends[d].filter((d) => !cannotParse.modules.some((m) => m === d))
 });
 
+function buildModules() {
 
+}
+
+var currentSettings = { paths: {} };
 var defaultSettings = {
 
-  force: argv.force,
-  toolkits: ['TKG3d','TKG2d', 'TKernel', 'TKMath', 'TKAdvTools',
+  force: yargs.argv.force,
+  toolkits: ['TKG3d', 'TKG2d', 'TKernel', 'TKMath', 'TKAdvTools',
     'TKGeomBase', 'TKBRep', 'TKGeomAlgo', 'TKTopAlgo'
   ],
   depends,
@@ -39,28 +43,32 @@ function prefixPath(prefix) {
     return path.join(prefix, p);
   }
 }
+
 // initialize paths and modules
-function init(file, options) {
+function init(options, file) {
   //console.log(file)
+
   file = file || 'settings.json';
   options = options || {};
   var settings = {};
+
   extend(settings, defaultSettings);
   if (fs.existsSync(file))
     extend(settings, JSON.parse(fs.readFileSync(file)));
   extend(settings, options);
+
   settings.modules = settings.toolkits
     .map((tkName) => toolkits.find((tk) => tk.name === tkName).modules)
     .reduce((a, b) => a.concat(b))
     .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
-    //settings.modules = flatten(settings.toolkits)
-    //  .filter((mod) => cannotParse.modules.indexOf(mod) === -1);
 
-    // settings.data.depends = fs.existsSync('config/depends.json') ?
-    //   JSON.parse(fs.readFileSync('config/depends.json')) : {};
+
+
+
+
   const buildPath = settings.buildPath;
   var prefix = prefixPath(process.cwd());
-  settings.paths = {
+  var paths = {
     build: prefix(settings.buildPath),
     wrapper: prefix(settings.wrapperPath),
     configDest: prefix(buildPath + '/config'),
@@ -72,14 +80,25 @@ function init(file, options) {
     gyp: prefix(buildPath + '/gyp'),
     dist: prefix(settings.distPath)
   };
+  var moduleArgs = yargs.argv._.splice(2);
+  settings.buildModules = moduleArgs.length ? moduleArgs :
+    glob.sync(`${paths.wrapper}/modules/*.js`)
+    .map((file) => path.basename(file).replace(".js", ""))
 
-  return settings;
+  settings.buildDepends = settings.buildModules.concat(
+    settings.buildModules
+      .map((mod) => settings.depends[mod])
+      .reduce((a, b) => a.concat(b))
+    ).filter((mod, index, arr) => arr.indexOf(mod) === index);
+
+  extend(currentSettings.paths, paths);
+  extend(currentSettings, settings);
+  return currentSettings;
 }
 
-module.exports = init()
-module.exports.init = init
-
-
+init();
+module.exports = currentSettings;
+module.exports.init = init;
 
 // process.env['LD_LIBRARY_PATH'] = settings.oce_lib;
 //

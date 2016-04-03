@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const glob = require('glob');
+const yargs = require('yargs');
 
 const gulp = require('gulp');
-const runSequence = require('run-sequence');
 const run = require('gulp-run');
 const gutil = require('gulp-util');
 
@@ -14,33 +14,19 @@ const settings = require('../src/settings.js');
 const common = require('./lib/common.js');
 const paths = settings.paths;
 
+const parseCmd = 'python tasks/python/parse_headers.py';
 
+function cacheFile(moduleName) {
+  return `${paths.headerCacheDest}/${moduleName}.json`;
+}
 
-
-
-// Copy hand written swig .i files from src/swig to build/...
-gulp.task('copy-user-swig', function(done) {
-  // TODO: cmd is completed after task is complete
-  return run(`rm -rf ${paths.userSwigDest}`).exec((error) => {
-    if (error) return done(error);
-    mkdirp.sync(paths.userSwigDest);
-    return run(`cp -r ${paths.userSwigSrc}/* ${paths.userSwigDest}`).exec(done);
-  });
-});
-
-
-// Read dependencies from cached pygccxml output TODO: make it a module task
-gulp.task('parse-dep-types', function(done) {
-  var res = {}
-  depend.findDependentTypes(['BRepBuilderAPI_MakeFace'], res)
-  console.log("=======================================")
-  console.log(Object.keys(res));
-});
-
-
-// Read dependencies from cached pygccxml output TODO: make it a module task
-gulp.task('parse-dependencies', function(done) {
+// Read dependencies from cached pygccxml output
+gulp.task('init-dependencies', function(done) {
   const depFile = 'config/depends.json';
+  if (fs.existsSync(depFile)) {
+    gutil.log('dependencies ok')
+    return done();
+  }
 
   return run(`rm -rf ${depFile}`).exec((error) => {
     if (error) return done(error);
@@ -54,33 +40,23 @@ gulp.task('parse-dependencies', function(done) {
   });
 });
 
-gulp.task('parse-all-headers', function(done) {
-  common.limitExecution('parse-headers', settings.modules, done);
-});
-gulp.task('parse', function(done) {
-  runSequence('parse-all-headers', 'parse-dependencies', done)
-});
-
-
+// Parse header for module
 settings.modules.forEach(function(moduleName) {
-  const treePath = `${paths.headerCacheDest}/${moduleName}.json`;
-
-  function mTask(name, mName) {
-    if (mName === undefined)
-      mName = moduleName;
-    return common.moduleTask(name, mName);
-  }
-
-  gulp.task(mTask('parse-headers'), function(done) {
-    if (fs.existsSync(treePath) && !settings.force) {
-      gutil.log('Skipping, headers already parsed', gutil.colors.magenta(treePath));
-      return done();
-    }
+  gulp.task(common.moduleTask('parse-headers', moduleName), function(done) {
     mkdirp.sync(paths.headerCacheDest);
-    return run(`python tasks/python/parse_headers.py ${moduleName} ${settings.oce_include} ${treePath}`).exec(done);
+    var cmd = `${parseCmd} ${moduleName} ${settings.oce_include} ${cacheFile(moduleName)}`;
+    return run(cmd).exec(done);
   });
+});
 
-  gulp.task(mTask('parse'), function(done) {
-    return runSequence(mTask('parse-headers'), done);
-  });
+// Parse all headers
+gulp.task('parse-headers', function(done) {
+  // only parse missing modules, or if forced.
+  var parseModules = settings.modules.filter(
+    (mod) => !fs.existsSync(cacheFile(mod)) || yargs.argv.force
+  );
+  if (parseModules.length > 0)
+    return common.limitExecution('parse-headers', parseModules, done);
+  gutil.log('Header cache up to date');
+  return done();
 });

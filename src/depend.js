@@ -13,13 +13,13 @@ function unique(t, index, array) {
 }
 
 function modName(name) {
-  var matchRes = name.match(/(?:Handle_)*(\w+?)_\w+/)
+  var matchRes = name.match(/(?:Handle_)*(\w+?)_\w+/);
   if (!matchRes) return name;
   return matchRes[1];
 }
 
 function isModule(name) {
-  console.log(name)
+  //console.log(name)
   name = modName(name) || name;
   return settings.modules.some((mod) => mod === name);
 }
@@ -30,6 +30,7 @@ function dependencyReader() {
   var modules = {};
   // return the type names that class member depends on
   function memberDepends(mem) {
+    //console.log(mem.name, mem.cls)
     return [mem.returnType]
       .concat(mem.arguments.map((a) => a.type))
       .map(filterTypeName)
@@ -39,15 +40,19 @@ function dependencyReader() {
   }
 
   // return the type names that this class depends on
-  function classDepends(cls, wrapped) {
+  function classDepends(cls, wrapped, contructorsOnly) {
     if (visitedCls.hasOwnProperty(cls.name)) {
       return [];
     }
+    console.log("Class", cls.name)
     visitedCls[cls.name] = true;
     const filter = wrapped ? cls.include : function() {
       return true
     };
-    var res = cls.members
+
+    var members = contructorsOnly ? cls.constructors :
+      cls.members.concat(cls.constructors)
+    var res = members
       .filter(filter)
       .map(memberDepends)
       .reduce((a, b) => a.concat(b), [])
@@ -61,11 +66,12 @@ function dependencyReader() {
   function moduleDepends(moduleName, wrapped) {
     const q = query.loadModule(moduleName);
     const filter = wrapped ? q.include : function() {
-      return true
+      return true;
     };
     return q.classes
       .filter(filter)
-      .map((cls) => classDepends(cls, wrapped, visited))
+      .filter((cls) => cls.name !== moduleName)
+      .map((cls) => classDepends(cls, wrapped))
       .reduce((a, b) => a.concat(b), [])
       .filter(unique);
   }
@@ -81,7 +87,6 @@ function dependencyReader() {
 
 
     var types = moduleDepends(moduleName, wrapped);
-    console.log(moduleName)
     var modules = types
       .map(modName)
       .filter(unique)
@@ -109,34 +114,34 @@ function dependencyReader() {
 
   function getModule(name) {
     name = modName(name)
-    console.log(name)
     if (modules.hasOwnProperty(name)) {
       return modules[name];
     }
-    console.log("mod")
     var q = query.loadModule(name);
     modules[name] = q;
     return q;
   }
 
-  this.missingClasses = function missingClasses(types, wrapped) {
-    console.log("missingClasses")
+  this.missingClasses = function missingClasses(types, wrapped, constructorsOnly) {
+    //console.log("missingClasses",[types], constructorsOnly)
+    wrapped = false;
     if (wrapped === undefined) wrapped = true;
     return types
-      .filter(isModule)
+      //.filter(isModule)
       .filter(unique)
-      .filter((cls) => !visitedCls[cls])
+      .filter((cls) => visitedCls[cls] === undefined)
       .map((clsName) => {
-        console.log(clsName)
         var cls = getModule(clsName).classes.get(clsName);
-        if(!cls) return [];
+        if (!cls) return [];
         if (cls && cls.cls !== "class") return [];
         //console.log(cls)
-        var deps = classDepends(cls, wrapped)
-        var depdeps = missingClasses(deps, wrapped)
+        var deps = classDepends(cls, wrapped, constructorsOnly)
+          //.filter((cls) => visitedCls[cls] === undefined)
+        console.log(cls.name, deps)
+        var depdeps = missingClasses(deps, wrapped, true);
         return deps.concat(depdeps)
-          .filter((c) => !types.some((t) => t == c));
-        return deps;
+          //.filter((c) => !types.some((t) => t == c));
+          //return deps;
 
       }).reduce((a, b) => a.concat(b), [])
       .filter(unique);
@@ -190,16 +195,14 @@ module.exports.findDependentTypes = function findDependentTypes(types, config, r
 var fs = require('fs');
 const toolkits = JSON.parse(fs.readFileSync('config/toolkits.json'));
 module.exports.toolkitDepends = function(moduleName) {
-  var modules = readModuleDependencies(moduleName).concat([moduleName]);
-  //console.log('MODS', modules)
-  var res = Object.keys(toolkits).filter((tk) => {
-    //console.log('TK', tk)
-    return toolkits[tk].some(
+  var modules = dependencyReader().requiredModules(moduleName).concat([moduleName]);
+  var res = toolkits.filter((tk) => {
+    return tk.modules.some(
       (m1) => modules.some((m2) => m1 === m2)
     );
   });
   //console.log('res', res)
-  return res;
+  return res.map((tk) => tk.name);
 };
 
 module.exports.reader = dependencyReader;

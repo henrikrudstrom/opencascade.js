@@ -21,20 +21,10 @@ function getToolkit(moduleName) {
 function toolkitDeps(moduleName) {
   return depend.toolkitDepends(moduleName)
     .map((s) => `      "-l${s}"`).join(',\n');
-  //console.log("TTOOOOOOOOL");
-  //console.log(res)
-  // var modules = settings.depends[moduleName].concat([moduleName]);
-  // var toolkits = settings.toolkits.map(getToolkit);
-  // //console.log(toolkits)
-  // return toolkits
-  //   .filter((m, index) => toolkits.indexOf(m) === index)
-  //   .map((s) => `      "-l${s}"`).join(',\n');
 }
 module.exports.tool = toolkitDeps;
 
 function writeConfig(moduleName, buildPath) {
-  //console.log("configure")
-  //console.log(toolkitDeps(moduleName))
   var src = `{
   "targets": [{
     "target_name":"${moduleName}",
@@ -57,6 +47,9 @@ ${toolkitDeps(moduleName)}
   mkdirp.sync(buildPath);
   fs.writeFileSync(`${buildPath}/binding.gyp`, src);
 }
+
+
+
 
 settings.modules.forEach(function(moduleName) {
   const buildPath = `${paths.gyp}/${moduleName}`;
@@ -85,7 +78,7 @@ settings.modules.forEach(function(moduleName) {
     }).exec(done);
   });
 
-  gulp.task(mTask('gyp-build'), [mTask('gyp-configure'), mTask('swig')], function(done) {
+  gulp.task(mTask('gyp-build'), [mTask('gyp-configure')], function(done) {
     run('node-gyp build', {
       cwd: buildPath,
       verbosity: 1

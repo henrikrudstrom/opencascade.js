@@ -20,6 +20,7 @@
   "homepage": "https://github.com/henrikrudstrom/opencascade.js",
   "devDependencies": {
     "arrify": "^1.0.1",
+    "async": "^2.0.0-rc.2",
     "camel-case": "^1.2.2",
     "co": "^4.6.0",
     "eslint": "^2.5.1",

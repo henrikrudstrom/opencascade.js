@@ -12,3 +12,10 @@ module.exports.renderSwig = function(moduleName, config) {
   });
   return renames.join('\n');
 };
+module.exports.process = function process(obj, tag) {
+  if (tag) {
+    obj.name = tag.newName;
+    obj.oldName = tag.name;
+  }
+  return obj;
+}

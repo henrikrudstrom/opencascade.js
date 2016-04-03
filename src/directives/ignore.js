@@ -40,3 +40,8 @@ module.exports.postConfigure = function(moduleName, q) {
       return { name: type, enabled: false };
     });
 };
+
+module.exports.process = function(obj, tag) {
+  if (tag && tag.enabled) return null;
+  return obj;
+}

@@ -8,7 +8,7 @@ module.exports = function(moduleName, conf, q) {
   conf.rename('gp_Ax2', 'Frame');
   conf.rename('gp_Ax22d', 'Frame2d');
   conf.rename('gp_Ax2d', 'Axis2d');
-  conf.rename('gp_Ax3', 'FrameLeft');
+  //conf.rename('gp_Ax3', 'FrameLeft');
   conf.rename('gp_Circ', 'Circle');
   conf.rename('gp_Circ2d', 'Circle2d');
   conf.rename('gp_Cone', 'Cone');

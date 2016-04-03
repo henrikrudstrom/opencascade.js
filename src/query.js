@@ -56,15 +56,15 @@ function initType(conf, cls) {
   return cls;
 }
 
-var moduleCache = {};
+//var moduleCache = {};
 module.exports.loadModule = function loadModule(moduleName, opts) {
   opts = opts || {};
-  if (moduleCache.hasOwnProperty(moduleName) && opts.cache){
-    //console.log("cahced")
-    return moduleCache[moduleName];
-  }
+  // if (moduleCache.hasOwnProperty(moduleName) && opts.cache){
+  //   //console.log("cahced")
+  //   return moduleCache[moduleName];
+  // }
   const tree = JSON.parse(fs.readFileSync(`${settings.paths.headerCacheDest}/${moduleName}.json`));
-  const configPath = `build/config/${moduleName}.json`
+  const configPath = `${settings.paths.build}/config/${moduleName}.json`
   var config = opts.config || {};
   if (opts.config === undefined && fs.existsSync(configPath)) {
     config = JSON.parse(fs.readFileSync(configPath));
@@ -91,6 +91,8 @@ module.exports.loadModule = function loadModule(moduleName, opts) {
 
     return true;
   };
-  moduleCache[moduleName] = tree;
+  //moduleCache[moduleName] = tree;
   return tree;
 };
+
+module.exports.getTag = tag;

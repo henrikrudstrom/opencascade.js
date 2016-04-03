@@ -1,5 +1,5 @@
-var settings = require('./settings.js')
-var gp = require('../dist/lib/gp.js');
+//var settings = require('./settings.js')
+var gp = require('../dist/lib/gp.node');
 
 //var Geom2d = require('../build/Release/Geom2d.node');
 function typeOf(obj){
@@ -62,6 +62,27 @@ describe('module gp', function() {
 
     //expect(xyz.constructor.name).toBe('XYZ');
   });
+
+it('gp.Sphere', function() {
+  var pnt = new gp.Point(1, 2, 4);
+  var dir = new gp.Dir(1,0,0);
+  var ax3 = new gp.Ax3(pnt, dir);
+  var sphere = new gp.Sphere(ax3, 10.0)
+  expect(typeof sphere).toBe('object');
+
+  //expect(xyz.constructor.name).toBe('XYZ');
+});
+
+it('gp.Point', function() {
+  var pnt = new gp.Point(1, 2, 4);
+  var xyz = pnt.xyz();
+  expect(typeof xyz).toBe('object');
+
+  //expect(xyz.constructor.name).toBe('XYZ');
+});
+
+
+
   //
   // it('can handle Standard_Real', function() {
   //   expect(gp).not.toBe(undefined)

@@ -10,9 +10,15 @@ module.exports.renderSwig = function(moduleName, config, q) {
     .join('\n');
 };
 
+
 module.exports.process = function(obj) {
   if (obj.cls !== 'member') return obj;
   obj.oldName = obj.name;
   obj.name = camelCase(name);
   return name;
+};
+
+module.exports.dictionary = function(config, obj) {
+  if (obj.cls !== 'member') return null;
+  return camelCase(obj.name);
 };

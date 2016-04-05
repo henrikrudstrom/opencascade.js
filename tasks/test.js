@@ -53,3 +53,11 @@ gulp.task('test-build', function() {
       reporter
     }));
 });
+gulp.task('test-conf', function() {
+  gulp.src(['spec/confSpec.js'])
+    .pipe(jasmine({
+      verbose: true,
+      includeStackTrace: yargs.argv.verbose,
+      reporter
+    }));
+});

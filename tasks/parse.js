@@ -55,6 +55,7 @@ gulp.task('parse-headers', function(done) {
   var parseModules = settings.modules.filter(
     (mod) => !fs.existsSync(cacheFile(mod)) || yargs.argv.force
   );
+  console.log(settings.modules)
   if (parseModules.length > 0)
     return common.limitExecution('parse-headers', parseModules, done);
   gutil.log('Header cache up to date');

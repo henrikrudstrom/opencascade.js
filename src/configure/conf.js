@@ -55,9 +55,12 @@ Module.prototype = {
       this.process('transform');
       return;
     }
-
+    if (this.declarations) {
+      this.declarations.forEach((decl) => decl.process(stackName));
+    }
     this.stacks[stackName].forEach((fn) => fn());
     this.stacks[stackName] = [];
+
   }
 };
 
@@ -65,6 +68,10 @@ Module.prototype = {
 function Class(decl) {
   extend(true, this, decl)
   this.key = decl.name;
+  this.stacks = {
+    include: [],
+    transform: []
+  }
 }
 Class.prototype = extend({}, Module.prototype)
 Class.prototype.include = function include(expr) {
@@ -75,9 +82,19 @@ Class.prototype.include = function include(expr) {
       this.declarations.push(cls);
     });
 };
+Class.prototype.process = function process(stackName) {
+  if (stackName === undefined) {
+    this.process('include');
+    this.process('transform');
+    return;
+  }
+  this.stacks[stackName].forEach((fn) => fn());
+  this.stacks[stackName] = [];
 
+}
 
 
 module.exports = {
-  Module, Class
+  Module,
+  Class
 }

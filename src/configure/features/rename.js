@@ -1,6 +1,6 @@
 const conf = require('../conf.js');
 
-conf.Module.prototype.rename = function rename(expr, name) {
+function rename(expr, name) {
 
   var nameFunc = name;
   if (typeof nameFunc !== 'function')
@@ -10,7 +10,8 @@ conf.Module.prototype.rename = function rename(expr, name) {
     obj.name = nameFunc(obj.name, obj);
   });
 };
-
+conf.Module.prototype.rename = rename;
+conf.Class.prototype.rename = rename;
 // conf.Module.prototype.includeAs = function includeAs(expr, name) {
 //   this.include(expr);
 //   this.rename(name);

@@ -98,21 +98,18 @@ describe('module object', function() {
   it('filter and rename members', function() {
     var mod = new conf.Module();
     mod.include('gp_Vec');
-    var vec = mod.get('gp_Vec')
+    var vec = mod.get('gp_Vec');
     vec.exclude('*');
     mod.process();
     expect(mod.get('gp_Vec').declarations.length).toBe(0);
-    expect(mod.get('gp_Vec')).toBe(vec)
-    console.log(mod.get('gp_Vec'))
+    expect(mod.get('gp_Vec')).toBe(vec);
     vec.include('SetX');
     expect(mod.get('gp_Vec').declarations.length).toBe(1);
     expect(mod.get('gp_Vec').get('SetX').name).toBe('SetX');
-    // vec.rename('SetX', 'setX');
-    // mod.process();
-    // expect(mod.get('gp_Vec').get('SetX').name).toBe('s  etX');
+    vec.rename('SetX', 'setX');
+    mod.process();
+    expect(mod.get('gp_Vec').get('SetX').name).toBe('setX');
   });
-
-
 });
 
 describe('Renderer', function() {

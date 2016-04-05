@@ -1,11 +1,9 @@
-String.prototype.replaceAll = function(search, replacement) {
-  var target = this;
+var replaceAll = function(target, search, replacement) {
   return target.split(search).join(replacement);
 };
 
 function match(exp, name) {
-  //
-  exp = new RegExp('^' + exp.replaceAll('*', '.*') + '$');
+  exp = new RegExp('^' + replaceAll(exp, '*', '.*') + '$');
   return exp.test(name);
 }
 

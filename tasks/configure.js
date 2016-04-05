@@ -22,6 +22,12 @@ gulp.task('configure-clean', function(done) {
   return run(`rm -rf ${paths.configDest}`).exec(done);
 })
 
+
+
+gulp.task('conf', function(){
+  var conf = require('../src/configure/configure.js')
+})
+
 gulp.task('configure', ['configure-clean', 'init'], function(done) {
   var depends = settings.buildModules
     .map((mod) => settings.depends[mod])

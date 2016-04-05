@@ -1,17 +1,23 @@
 const extend = require('extend');
 const headers = require('./headers.js');
 const common = require('./common.js');
-const util = require('util');
-
+const MapArray = require('./MapArray.js');
+MapArray = Array;
 function matcher(exp, matchValue) {
   if (matchValue === undefined)
     matchValue = true;
   return function(obj) {
     var key = obj.key || obj.name;
     return common.match(exp, key) ? matchValue : !matchValue;
-  }
+  };
 }
 
+function cleanTypeName(ret) {
+  ret = ret.replace(/&|\*/, '');
+  ret = ret.replace('const', '');
+  ret = ret.trim();
+  return ret;
+}
 
 
 function Module() {
@@ -27,17 +33,16 @@ Module.prototype = {
     this.name = name
   },
   find(expr) {
-    return common.find(this, expr, matcher); // TODO. search by key not name
+    return new common.find(this, expr, matcher); // TODO. search by key not name
   },
   get(name) {
     return common.get(this, name, matcher);
   },
   include(expr) {
-    headers.find(expr)
-      .forEach((decl) => {
-        var cls = new Class(decl);
-        this.declarations.push(cls);
-      });
+    var res = headers.find(expr)
+      .map((decl) => new Class(decl) );
+    this.declarations = this.declarations.concat(res);
+    return res;
   },
   exclude(expr) {
     this.declarations = this.declarations.filter(matcher(expr, false));
@@ -68,6 +73,14 @@ Module.prototype = {
 function Class(decl) {
   extend(true, this, decl)
   this.key = decl.name;
+  
+  this.declarations.forEach((decl) => {
+    if(decl.returnType) {
+      //decl.returnDecl = decl.returnType;
+      decl.returnType = cleanTypeName(decl.returnType)
+    }
+      
+  });
   this.stacks = {
     include: [],
     transform: []
@@ -78,8 +91,8 @@ Class.prototype.include = function include(expr) {
   expr = `${this.key}::${expr}`;
   headers.find(expr)
     .forEach((decl) => {
-      var cls = new Class(decl);
-      this.declarations.push(cls);
+      decl.key = decl.name;
+      this.declarations.push(decl);
     });
 };
 Class.prototype.process = function process(stackName) {
@@ -92,7 +105,6 @@ Class.prototype.process = function process(stackName) {
   this.stacks[stackName] = [];
 
 }
-
 
 module.exports = {
   Module,

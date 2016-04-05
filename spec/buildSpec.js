@@ -105,7 +105,7 @@ describe('build', function() {
     var q = query.loadModule('gp');
     expect(q.classes.filter(q.include).length).toBe(1);
 
-    console.log(data)
+    //console.log(data)
 
 
     //writeJSON(`${settings.paths.configDest}/${'gp'}.json`, data);

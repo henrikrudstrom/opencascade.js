@@ -1,6 +1,6 @@
 const settings = require('../settings.js');
 const arrify = require('arrify');
-function renderModule(mod, features) {
+function renderParts(mod, features) {
   var parts = {};
 
   function addPart(part) {
@@ -23,4 +23,4 @@ function renderModule(mod, features) {
   return parts;
 }
 
-module.exports.renderModule = renderModule;
+module.exports.renderParts = renderParts;

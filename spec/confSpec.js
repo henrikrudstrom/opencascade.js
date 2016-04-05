@@ -76,14 +76,16 @@ describe('module object', function() {
     expect(mod.get('gp_Vec').name).toBe('Vector');
     expect(mod.get('gp_Vec2d').name).toBe('Vector2d');
   });
+  
   it('can pass a function', function() {
     var mod = new conf.Module();
     mod.include('gp_Vec*');
-    mod.rename('gp_Vec*', (n) => n + '_suffix');
+    mod.rename('*', (n) => n + '_suffix');
     mod.process();
     expect(mod.get('gp_Vec').name).toBe('gp_Vec_suffix');
     expect(mod.get('gp_Vec2d').name).toBe('gp_Vec2d_suffix');
   });
+  
   it('functions can be composed', function() {
     conf.Module.prototype.testInclude = function(expr, name) {
       this.include(expr);
@@ -99,6 +101,7 @@ describe('module object', function() {
     var mod = new conf.Module();
     mod.include('gp_Vec');
     var vec = mod.get('gp_Vec');
+    
     vec.exclude('*');
     mod.process();
     expect(mod.get('gp_Vec').declarations.length).toBe(0);
@@ -109,6 +112,18 @@ describe('module object', function() {
     vec.rename('SetX', 'setX');
     mod.process();
     expect(mod.get('gp_Vec').get('SetX').name).toBe('setX');
+  });
+  
+  it('rename camel case', function() {
+    var mod = new conf.Module();
+    mod.include('gp_Vec');
+    var vec = mod.get('gp_Vec');
+    vec.include('*');
+    vec.camelCase('*');
+  
+    mod.process();
+    expect(vec.find('SetY')[0].name).toBe('setY');
+    expect(vec.find('Mirror')[0].name).toBe('mirror');
   });
 });
 

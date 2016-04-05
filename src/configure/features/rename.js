@@ -1,7 +1,6 @@
 const conf = require('../conf.js');
-
+const camelCase = require('camel-case');
 function rename(expr, name) {
-
   var nameFunc = name;
   if (typeof nameFunc !== 'function')
     nameFunc = () => name;
@@ -12,10 +11,13 @@ function rename(expr, name) {
 };
 conf.Module.prototype.rename = rename;
 conf.Class.prototype.rename = rename;
-// conf.Module.prototype.includeAs = function includeAs(expr, name) {
-//   this.include(expr);
-//   this.rename(name);
-// }
+
+function renameCamelCase(expr){
+  return this.rename(expr, camelCase);
+}
+conf.Class.prototype.camelCase = renameCamelCase;
+
+
 module.exports.render = function(mod) {
 
   return {

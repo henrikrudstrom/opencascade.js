@@ -8,7 +8,7 @@ function matcher(exp, matchValue) {
     matchValue = true;
   return function(obj) {
     var key = obj.key || obj.name;
-    return common.match(exp, key) ? matchValue : !matchValue
+    return common.match(exp, key) ? matchValue : !matchValue;
   }
 }
 

@@ -20,16 +20,9 @@ function cleanTypeName(ret) {
 }
 
 
-function Conf(decl) {
-  require('./features/rename.js');
-  if(decl){
-    extend(true, this, decl)
-    this.key = decl.name;
-  } else {
-    this.declarations = [];  
-  }
-  // include nothing by default
-  
+function Module() {
+  require('./features/rename.js')
+  this.declarations = [];
   this.stacks = {
     include: [],
     transform: []
@@ -37,33 +30,21 @@ function Conf(decl) {
 }
 
 
-Conf.prototype = {
+Module.prototype = {
   name(name) {
     this.name = name
   },
   find(expr) {
-    var res =  wrapDeclarations(common.find(this, expr, matcher)); // TODO. search by key not name
-    return res;
+    return new common.find(this, expr, matcher); // TODO. search by key not name
   },
-  
   get(name) {
     return common.get(this, name, matcher);
   },
-  
   include(expr) {
-    if(this.cls && this.cls === 'class')
-      expr = `${this.key}::${expr}`;
-    
     var res = headers.find(expr)
-      .map((decl) => {
-        if(decl.declarations)
-          return new Conf(decl);
-        decl.key = decl.name;
-        return extend(true, {}, decl);
-          
-      });
-      this.declarations = this.declarations.concat(res);
-      return wrapDeclarations(res);
+      .map((decl) => new Class(decl) );
+    this.declarations = this.declarations.concat(res);
+    return res;
   },
   exclude(expr) {
     this.declarations = this.declarations.filter(matcher(expr, false));
@@ -74,6 +55,7 @@ Conf.prototype = {
     });
   },
 
+
   process(stackName) {
     if (stackName === undefined) {
       this.process('include');
@@ -81,27 +63,52 @@ Conf.prototype = {
       return;
     }
     if (this.declarations) {
-      this.declarations
-        .filter((decl) => decl.declarations)
-        .forEach((decl) => decl.process(stackName));
+      this.declarations.forEach((decl) => decl.process(stackName));
     }
     this.stacks[stackName].forEach((fn) => fn());
     this.stacks[stackName] = [];
+
   }
 };
 
-function MultiConf(declarations){ }
-MultiConf.prototype = new Array();
-MultiConf.prototype.include = function(expr){
-  return this.map((decl) => decl.include(expr));
-};
-MultiConf.prototype.exclude = function(expr){
-  return this.map((decl) => decl.exclude(expr));
-};
-function wrapDeclarations(decls){
-    decls.__proto__ = new MultiConf();
-    return decls;
+
+function Class(decl) {
+  extend(true, this, decl)
+  this.key = decl.name;
+  //this.declarations = []; //include nothing by default
+  this.declarations.forEach((decl) => {
+    if(decl.returnType) {
+      //decl.returnDecl = decl.returnType;
+      decl.returnType = cleanTypeName(decl.returnType)
+    }
+      
+  });
+  this.stacks = {
+    include: [],
+    transform: []
   }
+}
+Class.prototype = extend({}, Module.prototype)
+Class.prototype.include = function include(expr) {
+  expr = `${this.key}::${expr}`;
+  headers.find(expr)
+    .forEach((decl) => {
+      decl.key = decl.name;
+      this.declarations.push(decl);
+    });
+};
+Class.prototype.process = function process(stackName) {
+  if (stackName === undefined) {
+    this.process('include');
+    this.process('transform');
+    return;
+  }
+  this.stacks[stackName].forEach((fn) => fn());
+  this.stacks[stackName] = [];
+
+}
+
 module.exports = {
-  Conf, wrapDeclarations
+  Module,
+  Class
 }

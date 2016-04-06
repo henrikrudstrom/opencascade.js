@@ -54,7 +54,7 @@ gulp.task('test-build', function() {
     }));
 });
 gulp.task('test-conf', function() {
-  gulp.src(['spec/confSpec.js'])
+  gulp.src(['spec/confSpec.js', 'spec/dependSpec.js'])
     .pipe(jasmine({
       verbose: true,
       includeStackTrace: yargs.argv.verbose,

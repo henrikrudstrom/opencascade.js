@@ -26,6 +26,7 @@ gulp.task('configure-clean', function(done) {
 
 gulp.task('conf', function(){
   var conf = require('../src/configure/configure.js')
+  conf(glob.sync('src/configure/modules/*.js'), `${settings.paths.build}/modules/`);
 })
 
 gulp.task('configure', ['configure-clean', 'init'], function(done) {

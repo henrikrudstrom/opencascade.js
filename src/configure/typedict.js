@@ -7,7 +7,7 @@ module.exports = function typedict(mods){
   };
   mods.forEach((mod) => {
     mod.declarations.forEach((decl) => {
-      dict[decl.key] = decl.name;
+      dict[decl.key] = `${mod.name}.${decl.name}`;
     });
   });
   console.log(dict)

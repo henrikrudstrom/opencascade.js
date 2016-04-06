@@ -1,10 +1,12 @@
 var headers = require('../src/configure/headers.js');
+
 require('../src/configure/features/rename.js');
 const conf = require('../src/configure/conf.js');
 
+
 const render = require('../src/configure/render.js');
 
-describe('headers object', function() {
+describe('querie objects', function() {
   it('can query headers', function() {
     expect(headers.find('gp_Pnt').length).toBe(1);
     expect(headers.get('gp_Pnt').name).toBe('gp_Pnt');
@@ -18,11 +20,13 @@ describe('headers object', function() {
     expect(headers.find('gp_Vec*WithNull*').length).toBe(1);
     expect(headers.find('gp_*::*Distance').length).toBe(22);
   });
+  
+
 });
 
 describe('module object', function() {
   it('can include declared types', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Pnt');
     mod.process('include');
     expect(mod.declarations[0].name).toBe('gp_Pnt');
@@ -39,25 +43,25 @@ describe('module object', function() {
     expect(mod.declarations.length).toBe(2);
   });
   it('is queryable', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Pnt');
     mod.process('include');
     expect(mod.get('gp_Pnt').name).toBe('gp_Pnt');
     expect(mod.find('gp_*').length).toBe(1);
   });
-  it('deepcopies the object from the source', function() {
-    var mod = new conf.Module();
-    mod.include('gp_Pnt');
-    mod.process('include');
-    var wrapped = mod.get('gp_Pnt');
-    var orig = headers.get('gp_Pnt');
-    expect(wrapped).not.toBe(orig);
-    expect(wrapped.declarations[0]).not.toBe(orig.declarations[0]);
-    expect(wrapped.declarations.length).toBe(orig.declarations.length);
-  });
+  // it('deepcopies the object from the source', function() {
+  //   var mod = new conf.Conf();
+  //   mod.include('gp_Pnt');
+  //   mod.process('include');
+  //   var wrapped = mod.get('gp_Pnt');
+  //   var orig = headers.get('gp_Pnt');
+  //   expect(wrapped).not.toBe(orig);
+  //   expect(wrapped.declarations[0]).not.toBe(orig.declarations[0]);
+  //   expect(wrapped.declarations.length).toBe(orig.declarations.length);
+  // });
 
   it('can rename declarations', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Pnt');
     mod.rename('gp_Pnt', 'Point');
     mod.process();
@@ -72,14 +76,14 @@ describe('module object', function() {
   
   
   it('can rename before include', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.rename('gp_Vec', 'Vector');
     mod.include('gp_Vec');
     mod.process();
     expect(mod.get('gp_Vec').name).toBe('Vector');
   });
   it('only last is valid', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
 
     mod.include('gp_Vec*');
     mod.rename('gp_Vec*', 'Vector');
@@ -90,7 +94,7 @@ describe('module object', function() {
   });
   
   it('can pass a function', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Vec*');
     mod.rename('*', (n) => n + '_suffix');
     mod.process();
@@ -99,18 +103,18 @@ describe('module object', function() {
   });
   
   it('functions can be composed', function() {
-    conf.Module.prototype.testInclude = function(expr, name) {
+    conf.Conf.prototype.testInclude = function(expr, name) {
       this.include(expr);
       this.rename(expr, name);
     };
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.testInclude('gp_Vec', 'Vector');
     mod.process();
     expect(mod.get('gp_Vec').name).toBe('Vector');
   });
 
   it('filter and rename members', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Vec');
     var vec = mod.get('gp_Vec');
     
@@ -128,15 +132,28 @@ describe('module object', function() {
   
   
   it('can query nested declarations', function(){
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_*');
     mod.camelCase('*::*');
     mod.process();
     expect(mod.find('gp_Vec::SetX')[0].name).toBe('setX');
   });
 
+  it('can apply to many declarations', function(){
+    var mod = new conf.Conf();
+    var classes = mod.include('gp_*');
+    classes.exclude('*');
+    mod.find('gp_Vec*').include('Set*');
+    mod.process();
+    expect(mod.get('gp_Pnt').declarations.length).toBe(0);
+    expect(mod.get('gp_Vec').declarations.length).toBe(12);
+    expect(mod.get('gp_Vec2d').declarations.length).toBe(9);
+    
+  });
+
+
   it('rename camel case', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Vec');
     var vec = mod.get('gp_Vec');
     vec.include('*');
@@ -147,7 +164,7 @@ describe('module object', function() {
     expect(vec.find('Mirror')[0].name).toBe('mirror');
   });
   it('rename remove prefix', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
     mod.include('gp_Vec');
     mod.include('Geom_Point');
     mod.include('Handle_Geom_Point');
@@ -162,7 +179,7 @@ describe('module object', function() {
 
 describe('Renderer', function() {
   it('can render renames', function() {
-    var mod = new conf.Module();
+    var mod = new conf.Conf();
 
     mod.include('gp_Vec');
     mod.include('gp_Vec2d');
@@ -174,44 +191,49 @@ describe('Renderer', function() {
     expect(parts.rename).toBe(res);
   });
   
-  describe('MapArray', function() {
-    var MapArray = require('../src/configure/MapArray.js');
-    function MyClass(value){
-      this.value = value;
-    }
-    MyClass.prototype.test1 = function(a){
-      return this.value * a;
-    }
-    MyClass.prototype.test2 = function(){
-      this.value += 1;
-    }
-    function MyOtherClass(name){
-      this.name = name;
-      this.value = 1;
-    }
-    
-    MyOtherClass.prototype.test1 = function(a){
-      return this.value * a * 2;
-    }
-    
-    var array1 = new MapArray([new MyClass(1), new MyClass(2)]);
-    var array2 = new MapArray([new MyClass(1), new MyOtherClass(2)]);
+  describe('MultiConf', function() {
+
     
     it('behaves as a normal array', function(){
-      expect(array1[0].value).toBe(1);
-      expect(array1[1].value).toBe(2);
-      var sum = array1.map((obj) => obj.value).reduce((a,b) => a + b);
-      expect(sum).toBe(3);
+      var a = [1,3,5];
+      conf.wrapDeclarations(a);
+      expect(a[0]).toBe(1);
+      expect(a[1]).toBe(3);
+      var sum = a.reduce((a,b) => a + b);
+      expect(sum).toBe(9);
+      expect(typeof a.include).toBe('function')
+      expect(typeof a.exclude).toBe('function')
     })
     
-    it('maps variables and functions', function(){
-      expect(array1.value()).toEqual([1,2]);
-      expect(array1.test1(10)).toEqual([10, 20]);
-      array1.test2();
-      expect(array1[0].value).toBe(2);
-      expect(array1[1].value).toBe(3);
-    });
+    // it('maps variables and functions', function(){
+    //   expect(array1.value()).toEqual([1,2]);
+    //   expect(array1.test1(10)).toEqual([10, 20]);
+    //   array1.test2();
+    //   expect(array1[0].value).toBe(2);
+    //   expect(array1[1].value).toBe(3);
+    // });
     
   })
   
 });
+var moduleReader = require('../src/configure/modules.js');
+describe('modules queries', function(){
+    it('can query wrapped modules', function(){
+    var mod1 = new conf.Conf();
+    mod1.name('gp');
+    mod1.include('gp_Pnt');
+    mod1.rename('gp_Pnt', 'Point');
+    mod1.process();
+    var mod2 = new conf.Conf();
+    mod2.name('Geom');
+    mod2.include('Geom_Point');
+    mod1.process();
+    
+    var mods = moduleReader([mod1, mod2])
+    
+    expect(mods.get('gp.Point').name).toBe('Point');
+    expect(mods.get('Geom.Geom_Point').name).toBe('Geom_Point');
+    
+  });
+});
+

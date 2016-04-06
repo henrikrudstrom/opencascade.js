@@ -1,3 +1,4 @@
+
 const conf = require('../conf.js');
 const camelCase = require('camel-case');
 function rename(expr, name) {
@@ -19,14 +20,14 @@ function rename(expr, name) {
     
   });
 };
-conf.Module.prototype.rename = rename;
-conf.Class.prototype.rename = rename;
+
+conf.Conf.prototype.rename = rename;
 
 function renameCamelCase(expr){
   return this.rename(expr, camelCase);
 }
-conf.Module.prototype.camelCase = renameCamelCase;
-conf.Class.prototype.camelCase = renameCamelCase;
+
+conf.Conf.prototype.camelCase = renameCamelCase;
 
 function removePrefix(expr){
   return this.rename(expr, (name) => {
@@ -35,8 +36,7 @@ function removePrefix(expr){
     return match[1] + match[3];
   });
 }
-conf.Module.prototype.removePrefix = removePrefix;
-conf.Class.prototype.removePrefix = removePrefix;
+conf.Conf.prototype.removePrefix = removePrefix;
 
 //TODO implement as function called inside configuration
 module.exports.renderSwig = function(moduleName, config, q) {
@@ -48,11 +48,7 @@ module.exports.renderSwig = function(moduleName, config, q) {
     .join('\n');
 };
 
-
-
-
 module.exports.render = function(mod) {
-
   return {
     part: 'rename',
     src: mod.declarations

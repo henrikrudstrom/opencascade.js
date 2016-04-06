@@ -15,23 +15,29 @@ function configureModule(file){
   var file = file.replace("src/configure/", "./");
   var configure = require(file);
   
-  var mod = new conf.Module();
+  var mod = new conf.Conf();
   configure(mod);
   mod.process();
+  if(!mod.name) 
+    throw new Error('Configuration Error: module name must be specified.');
   return mod;
 }
 
-function configure(){
-  
-  var mods = glob.sync('src/configure/modules/*.js').map(configureModule)
-  console.log(mods)
+
+
+
+function translateTypes(mods){
   var typedict = createTypeDict(mods);
   mods.forEach((mod) => {
-    var members = mod.declarations.map(
+    mod.declarations.map(
+      (decl) => decl.bases ? decl.bases : []
+    ).forEach((base) => base.name = typedict(base.name))
+    
+    mod.declarations.map(
       (decl) => decl.declarations ? decl.declarations : []
-    ).reduce((a,b) => a.concat(b));
-    console.log(members)
-    members.forEach(
+    )
+    .reduce((a,b) => a.concat(b))
+    .forEach(
       (mem) => {
         mem.returnType = typedict(mem.returnType);
         mem.arguments.forEach((arg) => {
@@ -39,18 +45,27 @@ function configure(){
           arg.type = typedict(arg.type);
         })
       }
-    )
+    );
     
   })
   
   
+}
+
+function configure(configurationFiles, outputPath){
+  var mods = configurationFiles.map(configureModule)
+  
+  translateTypes(mods);
   
   mods.forEach((mod) => {
-    var destFile = `${settings.paths.build}/${mod.name}.js`;
+    delete mod.stacks
+    mod.declarations.forEach((decl) => delete decl.stacks)
+    var destFile = `${outputPath}/${mod.name}.js`;
     mkdirp(path.dirname(destFile));
     fs.writeFileSync(destFile, JSON.stringify(mod, null, 2));  
-  })
+  });
   
 }
 
-module.exports = configure();
+module.exports = configure;
+module.exports.translateTypes = translateTypes;

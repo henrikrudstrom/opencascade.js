@@ -2,6 +2,13 @@ const settings = require('../settings.js');
 const common = require('./common.js');
 const fs = require('fs');
 
+function cleanTypeName(ret) {
+  ret = ret.replace(/&|\*/, '');
+  ret = ret.replace('const', '');
+  ret = ret.trim();
+  return ret;
+}
+
 function matcher(exp, matchValue) {
   if (matchValue === undefined)
     matchValue = true;
@@ -10,11 +17,22 @@ function matcher(exp, matchValue) {
   };
 }
 function processType(type) {
+  // TODO: should be implemented in header_parser.py
   type.declarations = [];
   if (type.cls !== 'class') return type;
   type.declarations = type.constructors.concat(type.members);
-  delete type.constructors;
+  delete type.constructors; 
   delete type.members;
+  
+  type.declarations.forEach((decl) => {
+    if(!decl.declarations) return;
+    decl.declarations.forEach((d) => {
+      if(d.returnType) {
+        d.returnTypeDecl = d.returnType;
+        d.returnType = cleanTypeName(d.returnType)
+      }      
+    });
+  });
   return type;
 }
 
@@ -24,7 +42,7 @@ function loadModule(mod) {
     .concat(data.enums)
     .concat(data.classes)
     .map(processType);
-  delete data.typedefs;
+  delete data.typedefs; // TODO: should be implemented in header_parser.py
   delete data.enums;
   delete data.classes;
   return data;
@@ -36,13 +54,6 @@ function getModule(mod) {
   if (modules[mod] === undefined)
     modules[mod] = loadModule(mod);
   return modules[mod];
-}
-
-function children(type) {
-  if (type.cls === 'class')
-    return type.declarations;
-  //TODO: enums
-  return [];
 }
 
 function find(expr) {

@@ -3,6 +3,7 @@ const headers = require('./headers.js');
 const common = require('./common.js');
 const MapArray = require('./MapArray.js');
 MapArray = Array;
+
 function matcher(exp, matchValue) {
   if (matchValue === undefined)
     matchValue = true;
@@ -20,50 +21,51 @@ function cleanTypeName(ret) {
 }
 
 
-function Conf(decl) {
+function Conf(decl, parent) {
   require('./features/rename.js');
-  if(decl){
+  if (decl) {
     extend(true, this, decl)
     this.key = decl.name;
+    this.parent = parent;
   } else {
-    this.declarations = [];  
+    this.declarations = [];
   }
+
   // include nothing by default
-  
+
   this.stacks = {
     include: [],
     transform: []
   }
 }
 
-
 Conf.prototype = {
   name(name) {
     this.name = name
   },
   find(expr) {
-    var res =  wrapDeclarations(common.find(this, expr, matcher)); // TODO. search by key not name
+    var res = wrapDeclarations(common.find(this, expr, matcher)); // TODO. search by key not name
     return res;
   },
-  
+
   get(name) {
     return common.get(this, name, matcher);
   },
-  
+
   include(expr) {
-    if(this.cls && this.cls === 'class')
+    if (this.cls && this.cls === 'class')
       expr = `${this.key}::${expr}`;
-    
+
     var res = headers.find(expr)
       .map((decl) => {
-        if(decl.declarations)
-          return new Conf(decl);
+        if (decl.declarations)
+          return new Conf(decl, this.name);
         decl.key = decl.name;
         return extend(true, {}, decl);
-          
+
       });
-      this.declarations = this.declarations.concat(res);
-      return wrapDeclarations(res);
+    this.declarations = this.declarations.concat(res);
+    return wrapDeclarations(res);
   },
   exclude(expr) {
     this.declarations = this.declarations.filter(matcher(expr, false));
@@ -90,18 +92,20 @@ Conf.prototype = {
   }
 };
 
-function MultiConf(declarations){ }
+function MultiConf(declarations) {}
 MultiConf.prototype = new Array();
-MultiConf.prototype.include = function(expr){
+MultiConf.prototype.include = function(expr) {
   return this.map((decl) => decl.include(expr));
 };
-MultiConf.prototype.exclude = function(expr){
+MultiConf.prototype.exclude = function(expr) {
   return this.map((decl) => decl.exclude(expr));
 };
-function wrapDeclarations(decls){
-    decls.__proto__ = new MultiConf();
-    return decls;
-  }
+
+function wrapDeclarations(decls) {
+  decls.__proto__ = new MultiConf();
+  return decls;
+}
 module.exports = {
-  Conf, wrapDeclarations
+  Conf,
+  wrapDeclarations
 }

@@ -7,26 +7,25 @@ function matcher(exp, matchValue) {
   if (matchValue === undefined)
     matchValue = true;
   return function(obj) {
-    console.log(obj.name)
     return common.match(exp, obj.name) ? matchValue : !matchValue;
   };
 }
 
-function modules(mods){
-  if(mods === undefined){
+function moduleQuery(mods) {
+  if (mods === undefined) {
     glob.sync(`${settings.paths.build}/modules/*.json`).forEach((file) => {
-       JSON.parse(fs.readFileSync(file));
+      JSON.parse(fs.readFileSync(file));
     })
   }
-  
-  var modules =  {};
+
+  var modules = {};
   mods.forEach((mod) => {
     modules[mod.name] = mod;
   });
 
   function find(expr) {
     var mod;
-    if(expr.indexOf('.') !== -1){
+    if (expr.indexOf('.') !== -1) {
       mod = expr.split('.')[0];
       expr = expr.split('.')[1];
     } else {
@@ -34,20 +33,21 @@ function modules(mods){
     }
     return common.find(modules[mod], expr, matcher);
   }
-  
+
   function get(name) {
     var res = find(name);
     if (res.length === 0) return null;
     if (res.length === 1) return res[0];
     throw new Error('headers.get expected one result, got multiple');
   }
-  
+
   // hopefully only for debugging
-  function clearCache(){
+  function clearCache() {
     modules = {};
   }
   return {
-    find, get: get
+    find,
+    get: get
   };
 }
-module.exports = modules;
+module.exports = moduleQuery;

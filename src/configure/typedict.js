@@ -1,7 +1,7 @@
 module.exports = function typedict(mods){
   var dict = {
-    Standard_Real: 'double', 
-    Standard_Boolean: 'bool', 
+    Standard_Real: 'double',
+    Standard_Boolean: 'bool',
     Standard_CString: 'string',
     Standard_Integer: 'int'
   };
@@ -10,9 +10,7 @@ module.exports = function typedict(mods){
       dict[decl.key] = `${mod.name}.${decl.name}`;
     });
   });
-  console.log(dict)
   return (name) => {
-    console.log(name)
     if(dict.hasOwnProperty(name)) return dict[name];
     return name;
   }

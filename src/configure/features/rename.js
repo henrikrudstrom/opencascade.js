@@ -1,3 +1,4 @@
+
 const conf = require('../conf.js');
 const camelCase = require('camel-case');
 
@@ -37,30 +38,27 @@ function removePrefix(expr){
 conf.Conf.prototype.rename = rename;
 conf.Conf.prototype.camelCase = renameCamelCase;
 conf.Conf.prototype.removePrefix = removePrefix;
-
+module.exports.name = 'property'
 module.exports.renderSwig = function(decl) {
   //console.log(decl.name, decl.cls)
+  if(decl.cls === 'module'){
+    return {
+        name: 'featureIncludes',
+        src: `%include renames.i;`
+      };
+  }
   if(!decl.rename) return;
   
   if(decl.cls === 'class' || decl.cls === 'enum' || decl.cls === 'typedef')
     return {
-      name: 'rename',
+      name: 'renames.i',
       src: `%rename("${decl.name}") ${decl.key};`
     }
   else if(decl.cls === 'memfun' || decl.cls === 'variable'){
     var srcDecl = decl.source();
     return {
-      name: 'rename',
+      name: 'renames.i',
       src: `%rename("${decl.name}") ${srcDecl.parent}::${srcDecl.name};`
-    }
+    };
   }
-  
-  // if(decl.cls !== 'module') return;
-  // return {
-  //   name: 'rename',
-  //   src: decl.declarations
-  //     .filter((decl) => decl.rename)
-  //     .map((decl) => `%rename("${decl.name}") ${decl.key};`)
-  //     .join('\n')
-  // };
 };

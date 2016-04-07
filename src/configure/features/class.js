@@ -1,3 +1,5 @@
+module.exports.name = 'class'
+
 function renderArg(arg) {
   var res = arg.decl + ' ' + arg.name;
   if (arg.default) {
@@ -15,37 +17,39 @@ function renderFunction(func) {
     ${stat}${cons}${func.returnType + ' '}${func.name}(${args});`;
 }
 
-function renderClass(cls, config) {
-  var functions = cls.members
-    //.filter((member) => member.cls === 'calldef')
-    .filter(cls.include)
-    //.filter(ignore(config, cls))
-    .map(renderFunction).join('');
+module.exports.renderSwig = function(cls, parts) {
+  if(cls.cls !== 'class') return;
+  
   var base = '';
   if (cls.bases.length > 0) {
     base = ' : ' + cls.bases[0].access + ' ' + cls.bases[0].name;
   }
-  const constructors = cls.constructors
-    .filter(cls.include)
+  const constructors = cls.declarations
+    .filter((mem) => mem.cls === 'constructor')
     .map(renderFunction).join('');
-  return `\
+    
+  const functions = cls.members
+    .filter((mem) => mem.cls !== 'constructor')
+    .map(renderFunction).join('');
+    
+  const src = `\
 %nodefaultctor ${cls.name};
 class ${cls.name}${base} {
 	public:
     /* Constructors */
     ${constructors}
     /* Member functions */
+    ${parts(cls.name+'Properties')}
     ${functions}
 };`;
+  return [
+{
+      name: 'classIncludes',
+      src: `%include classes/${cls.name}`
+    },
+    {
+      name: `classes/${cls.name}.i`,
+      src: src
+    }
+  ];
 }
-
-module.exports.renderSwig = function(moduleName, config, q) {
-  var parts = {};
-  q.classes
-    .filter(q.include)
-    //.filter(ignore(config))
-    .forEach(function(cls) {
-      parts[cls.name] = renderClass(cls, config);
-    });
-  return parts;
-};

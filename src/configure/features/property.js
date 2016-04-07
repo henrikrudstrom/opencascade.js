@@ -1,3 +1,4 @@
+module.exports.name = 'property'
 const conf = require('../conf.js');
 const headers = require('../headers.js');
 conf.Conf.prototype.property = function(getter, setter, name) {
@@ -30,7 +31,7 @@ conf.Conf.prototype.property = function(getter, setter, name) {
   });
   return this;
 };
-module.exports.renderSwig = function(decl, parent) {
+module.exports.renderSwig = function(decl) {
   if(decl.cls !== 'property') return;
   var srcGetter = decl.source('getterKey')
   var args = [srcGetter.parent, srcGetter.returnType, decl.name, decl.getterKey]
@@ -38,8 +39,7 @@ module.exports.renderSwig = function(decl, parent) {
     args.push(decl.setterKey)
   
   return {
-    name: 'property',
+    name: decl.parent + 'Properties',
     src: `%attribute(${args.join(', ')});`
-  }
-
+  };
 };

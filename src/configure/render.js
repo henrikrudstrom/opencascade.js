@@ -1,68 +1,42 @@
 const arrify = require('arrify');
+var features = ['rename', 'property', 'class', 'module']
+var featureModules = features.map((name) => require(`./features/${name}.js`));
 
 
-
-
-// function renderParts(mod, features) {
-//   var parts = {};
-
-//   function addPart(part) {
-    
-//     if (!parts.hasOwnProperty(part.part))
-//       parts[part.part] = [];
-//     parts[part.part].push(part.src);
-//   }
-
-//   arrify(features).forEach((feat) => {
-//     if (!feat.hasOwnProperty('render')) return;
-//     addPart(feat.render(mod));
-//   });
-
-//   Object.keys(parts).forEach((key) => {
-//     parts[key] = parts[key].join('\n\n');
-//   });
-
-//   return parts;
-// }
-
-function renderFeatures(decl, features){
-  return features
-    .filter((feat) => feat.hasOwnProperty('renderSwig'))
-    .map((feat) => arrify(feat.renderSwig(decl)))
-    .reduce((a, b) => a.concat(b))
-    .filter((src) => src)
+function Parts(){
+  this.parts = {};
+}
+Parts.prototype = {
+  add(parts){
+    parts = arrify(parts);
+    parts.forEach((part) => {
+      if (!this.parts.hasOwnProperty(part.name))
+        this.parts[part.name] = [];
+      this.parts[part.name].push(part.src);  
+    });
+  },
+  get(partName){
+    var parts = this.parts[partName];
+    if(parts !== undefined)
+      return parts.join('\n');
+    return '// ' + partName + ' is not defined';
+  }
 }
 
-
-
-function renderParts(mod, features){
-  features = arrify(features)
-  
-  var parts = {}
-  function addParts(list) {
-    //if(!parts) return;
-    console.log("ADD", list)
-    list = arrify(list);
-    list.forEach((part) => {
-      if (!parts.hasOwnProperty(part.name))
-        parts[part.name] = [];
-      parts[part.name].push(part.src);  
-    });
-    
-  }
-  function collectParts(decl, parent){
-    //console.log("collect", decl.name, decl.cls);
-    addParts(renderFeatures(decl, features));
+function renderFeature(parts, decl, feature){
+    console.log("Render", feature.name, decl.name)
+    parts.add(feature.renderSwig(decl, parts));
     if(decl.declarations)
-      decl.declarations.forEach((d) => collectParts(d, decl));
-  }
-  
-  collectParts(mod);
-  //console.log("PARTS", parts)
+      decl.declarations.forEach((d) => renderFeature(parts, d, feature));
+}
+
+function render(mod, features){
+  var parts = new Parts();
+  (features || featureModules).forEach((feat) => {
+    renderFeature(parts, mod, feat);
+  });
   return parts;
 }
-
-
-
-
-module.exports.renderParts = renderParts;
+ 
+module.exports = render;
+module.exports.feature = renderFeature;

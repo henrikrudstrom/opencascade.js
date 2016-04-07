@@ -11,43 +11,53 @@ describe('Swig Renderer', function() {
     require(`../src/configure/features/${name}.js`)
   );
   
-  it('can render renames', function() {
+  it('can render a module', function(){
     var mod = new conf.Conf();
     mod.name = 'gp';
-    mod.include('gp_Vec');
-    mod.include('gp_Vec2d');
-    mod.rename('gp_Vec*', 'Vector');
-    mod.rename('gp_Vec2d', 'Vector2d');
+    var res = render(mod);
     
-    var res = mod.get('gp_Vec2d')
-      .include('SetX')
-      .rename('SetX', 'setX');
-    
-    mod.process();
-    var parts = render.renderParts(mod, features);
-    
-    var res = [
-      '%rename("Vector") gp_Vec;',
-      '%rename("Vector2d") gp_Vec2d;',
-      '%rename("setX") gp_Vec2d::SetX;'
-    ];
-    expect(parts.rename.length).toBe(3);
-    expect(parts.rename).toEqual(res);
+    var src = res.get('module.i');
+    console.log(src);
+    expect(src.indexOf('%include renames.i')).not.toBe(-1)
   });
   
-  it('can render properties', function(){
-    var mod = new conf.Conf();
-    mod.name = 'gp';
-    mod.include('gp_Vec');
-    mod.get('gp_Vec')
-      .include('X')
-      .include('SetX')
-      .rename('X', 'x')
-      .property('X', 'SetX')
-    mod.process();
+  // it('can render renames', function() {
+  //   var mod = new conf.Conf();
+  //   mod.name = 'gp';
+  //   mod.include('gp_Vec');
+  //   mod.include('gp_Vec2d');
+  //   mod.rename('gp_Vec*', 'Vector');
+  //   mod.rename('gp_Vec2d', 'Vector2d');
+    
+  //   var res = mod.get('gp_Vec2d')
+  //     .include('SetX')
+  //     .rename('SetX', 'setX');
+    
+  //   mod.process();
+  //   var parts = render(mod);
+    
+  //   var res = [
+  //     '%rename("Vector") gp_Vec;',
+  //     '%rename("Vector2d") gp_Vec2d;',
+  //     '%rename("setX") gp_Vec2d::SetX;'
+  //   ];
+  //   expect(parts.rename.length).toBe(3);
+  //   expect(parts.rename).toEqual(res);
+  // });
+  
+  // it('can render properties', function(){
+  //   var mod = new conf.Conf();
+  //   mod.name = 'gp';
+  //   mod.include('gp_Vec');
+  //   mod.get('gp_Vec')
+  //     .include('X')
+  //     .include('SetX')
+  //     .rename('X', 'x')
+  //     .property('X', 'SetX')
+  //   mod.process();
 
-    var parts = render.renderParts(mod, features);
-    var res = ['%attribute(gp_Vec, Standard_Real, x, X, SetX);']
-    expect(parts.property).toEqual(res);
-  });
+  //   var parts = render(mod);
+  //   var res = ['%attribute(gp_Vec, Standard_Real, x, X, SetX);']
+  //   expect(parts.property).toEqual(res);
+  // });
 });

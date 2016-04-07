@@ -22,13 +22,9 @@ function rename(expr, name) {
   return this;
 };
 
-conf.Conf.prototype.rename = rename;
-
 function renameCamelCase(expr){
   return this.rename(expr, camelCase);
 }
-
-conf.Conf.prototype.camelCase = renameCamelCase;
 
 function removePrefix(expr){
   return this.rename(expr, (name) => {
@@ -37,24 +33,34 @@ function removePrefix(expr){
     return match[1] + match[3];
   });
 }
+
+conf.Conf.prototype.rename = rename;
+conf.Conf.prototype.camelCase = renameCamelCase;
 conf.Conf.prototype.removePrefix = removePrefix;
 
-//TODO implement as function called inside configuration
-module.exports.renderSwig = function(moduleName, config, q) {
-  var prefix = `${moduleName}_`;
-  return q.classes
-    .filter((cls) => cls.name.startsWith(prefix))
-    .filter(q.include)
-    .map((cls) => `%rename("${cls.name.replace(prefix, '')}") ${cls.name};`)
-    .join('\n');
-};
-
-module.exports.render = function(mod) {
-  return {
-    part: 'rename',
-    src: mod.declarations
-      .filter((decl) => decl.rename)
-      .map((decl) => `%rename("${decl.name}") ${decl.key};`)
-      .join('\n')
-  };
+module.exports.renderSwig = function(decl) {
+  //console.log(decl.name, decl.cls)
+  if(!decl.rename) return;
+  
+  if(decl.cls === 'class' || decl.cls === 'enum' || decl.cls === 'typedef')
+    return {
+      name: 'rename',
+      src: `%rename("${decl.name}") ${decl.key};`
+    }
+  else if(decl.cls === 'memfun' || decl.cls === 'variable'){
+    var srcDecl = decl.source();
+    return {
+      name: 'rename',
+      src: `%rename("${decl.name}") ${srcDecl.parent}::${srcDecl.name};`
+    }
+  }
+  
+  // if(decl.cls !== 'module') return;
+  // return {
+  //   name: 'rename',
+  //   src: decl.declarations
+  //     .filter((decl) => decl.rename)
+  //     .map((decl) => `%rename("${decl.name}") ${decl.key};`)
+  //     .join('\n')
+  // };
 };

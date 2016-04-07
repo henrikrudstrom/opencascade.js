@@ -25,7 +25,7 @@ describe('classDepends', function() {
 
   it('can process wrapped dependencies', function() {
     var mod1 = new conf.Conf();
-    mod1.name('gp');
+    mod1.name = 'gp';
     mod1.include('gp_*');
     mod1.find('gp_*').include('*');
     mod1.removePrefix('*');

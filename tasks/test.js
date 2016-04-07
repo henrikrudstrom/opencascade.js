@@ -61,3 +61,11 @@ gulp.task('test-conf', function() {
       reporter
     }));
 });
+gulp.task('test-render', function() {
+  gulp.src(['spec/renderSpec.js'])
+    .pipe(jasmine({
+      verbose: true,
+      includeStackTrace: yargs.argv.verbose,
+      reporter
+    }));
+});

@@ -1,11 +1,13 @@
 const arrify = require('arrify');
+
+// defines which features to render and in what order.
 var features = ['rename', 'property', 'class', 'module']
 var featureModules = features.map((name) => require(`./features/${name}.js`));
-
 
 function Parts(){
   this.parts = {};
 }
+
 Parts.prototype = {
   add(parts){
     parts = arrify(parts);

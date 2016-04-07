@@ -1,11 +1,11 @@
-
 const conf = require('../conf.js');
 const camelCase = require('camel-case');
+
 function rename(expr, name) {
   var nameFunc = name;
   if (typeof nameFunc !== 'function')
     nameFunc = () => name;
-  return this.transform(expr, (obj) => {
+  this.transform(expr, (obj) => {
     if(obj.cls === 'constructor') return;
     obj.rename = true;
     obj.name = nameFunc(obj.name, obj);
@@ -19,6 +19,7 @@ function rename(expr, name) {
     });
     
   });
+  return this;
 };
 
 conf.Conf.prototype.rename = rename;

@@ -27,6 +27,7 @@ describe('classDepends', function() {
     var mod1 = new conf.Conf();
     mod1.name('gp');
     mod1.include('gp_*');
+    mod1.find('gp_*').include('*');
     mod1.removePrefix('*');
     mod1.process();
     configure.translateTypes([mod1]);

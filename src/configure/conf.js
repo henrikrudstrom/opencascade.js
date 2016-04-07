@@ -1,8 +1,6 @@
 const extend = require('extend');
 const headers = require('./headers.js');
 const common = require('./common.js');
-const MapArray = require('./MapArray.js');
-MapArray = Array;
 
 function matcher(exp, matchValue) {
   if (matchValue === undefined)
@@ -27,9 +25,10 @@ function Conf(decl, parent) {
     extend(true, this, decl)
     this.key = decl.name;
     this.parent = parent;
-  } else {
-    this.declarations = [];
   }
+  //} else {
+    this.declarations = [];
+  //}
 
   // include nothing by default
 
@@ -43,8 +42,10 @@ Conf.prototype = {
   name(name) {
     this.name = name
   },
+  
   find(expr) {
     var res = wrapDeclarations(common.find(this, expr, matcher)); // TODO. search by key not name
+
     return res;
   },
 
@@ -53,9 +54,10 @@ Conf.prototype = {
   },
 
   include(expr) {
-    if (this.cls && this.cls === 'class')
+    if (this.cls && (this.cls === 'class'|| this.cls === 'enum'))
       expr = `${this.key}::${expr}`;
-
+    
+    // query parsed headers for declaration
     var res = headers.find(expr)
       .map((decl) => {
         if (decl.declarations)
@@ -64,8 +66,12 @@ Conf.prototype = {
         return extend(true, {}, decl);
 
       });
-    this.declarations = this.declarations.concat(res);
-    return wrapDeclarations(res);
+    
+    this.declarations = this.declarations.concat(
+      // dont add existing declarations
+      res.filter((decl) => !this.declarations.some((d) => d.key === decl.key))
+    );
+    return this;
   },
   exclude(expr) {
     this.declarations = this.declarations.filter(matcher(expr, false));

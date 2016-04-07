@@ -1,6 +1,7 @@
 var headers = require('../src/configure/headers.js');
 
 require('../src/configure/features/rename.js');
+require('../src/configure/features/property.js');
 const conf = require('../src/configure/conf.js');
 
 
@@ -28,27 +29,38 @@ describe('module object', function() {
   it('can include declared types', function() {
     var mod = new conf.Conf();
     mod.include('gp_Pnt');
-    mod.process('include');
+    mod.process();
     expect(mod.declarations[0].name).toBe('gp_Pnt');
     expect(mod.declarations.length).toBe(1);
     mod.exclude('gp_Vec');
-    mod.process('include');
+    mod.process();
     expect(mod.declarations.length).toBe(1);
     mod.exclude('gp_Pnt');
     mod.include('gp_Vec*');
-    mod.process('include');
+    mod.process();
     expect(mod.declarations.length).toBe(3);
     mod.exclude('gp_*WithNullMagnitude');
-    mod.process('include');
+    mod.process();
     expect(mod.declarations.length).toBe(2);
   });
-  it('is queryable', function() {
+  it('declarations are only included once', function() {
     var mod = new conf.Conf();
     mod.include('gp_Pnt');
-    mod.process('include');
+    mod.include('gp_Pnt');
+    mod.process();
     expect(mod.get('gp_Pnt').name).toBe('gp_Pnt');
-    expect(mod.find('gp_*').length).toBe(1);
+    expect(mod.find('*').length).toBe(1);
   });
+  
+  it('can include declared types', function() {
+    var mod = new conf.Conf();
+    mod.include('gp_Pnt');
+    mod.include('gp_Pnt');
+    mod.process();
+    expect(mod.declarations[0].name).toBe('gp_Pnt');
+  });
+  
+  
   // it('deepcopies the object from the source', function() {
   //   var mod = new conf.Conf();
   //   mod.include('gp_Pnt');
@@ -63,6 +75,7 @@ describe('module object', function() {
   it('can rename declarations', function() {
     var mod = new conf.Conf();
     mod.include('gp_Pnt');
+    mod.find('gp_Pnt').include('*');
     mod.rename('gp_Pnt', 'Point');
     mod.process();
     expect(mod.get('gp_Pnt').name).toBe('Point');
@@ -133,7 +146,9 @@ describe('module object', function() {
   
   it('can query nested declarations', function(){
     var mod = new conf.Conf();
-    mod.include('gp_*');
+    mod.include('gp_*')
+    mod.find('*')
+      .include('*');
     mod.camelCase('*::*');
     mod.process();
     expect(mod.find('gp_Vec::SetX')[0].name).toBe('setX');
@@ -142,7 +157,7 @@ describe('module object', function() {
   it('can apply to many declarations', function(){
     var mod = new conf.Conf();
     var classes = mod.include('gp_*');
-    classes.exclude('*');
+    mod.find('gp_*').exclude('*');
     mod.find('gp_Vec*').include('Set*');
     mod.process();
     expect(mod.get('gp_Pnt').declarations.length).toBe(0);
@@ -174,6 +189,24 @@ describe('module object', function() {
     expect(mod.get('gp_Vec').name).toBe('Vec');
     expect(mod.get('Geom_Point').name).toBe('Point');
     expect(mod.get('Handle_Geom_Point').name).toBe('Handle_Point');
+  });
+  
+  it('can define properties', function(){
+    var mod = new conf.Conf();
+    mod.include('gp_Vec')
+    var vec = mod.get('gp_Vec')
+      .include('*')
+      .camelCase('*')
+      .property('X', 'SetX')
+    mod.process();
+    expect(vec.get('X').cls).toBe('property');
+    expect(vec.get('X').name).toBe('x');
+    expect(vec.get('X').type).toBe('Standard_Real');
+    expect(vec.get('SetX')).toBe(null);
+    console.log("Find", mod.get('gp_Vec::SetX'))
+    console.log('==X:',mod.get('gp_Vec').find('X'))
+    console.log('==SetX:',mod.get('gp_Vec').find('SetX'))
+    console.log('==x:',mod.get('gp_Vec').find('x'))
   });
 });
 

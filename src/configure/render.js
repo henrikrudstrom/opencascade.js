@@ -1,5 +1,8 @@
-const settings = require('../settings.js');
 const arrify = require('arrify');
+
+
+
+
 function renderParts(mod, features) {
   var parts = {};
 
@@ -12,7 +15,6 @@ function renderParts(mod, features) {
 
   arrify(features).forEach((feat) => {
     if (!feat.hasOwnProperty('render')) return;
-
     addPart(feat.render(mod));
   });
 
